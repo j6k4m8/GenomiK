@@ -1,5 +1,6 @@
 the meteor-react repository that forms the frontend of this project
 
-### How to compile
-# run `meteor add coffeescript`
-# run `meteor add react`
+# How to compile
+### Install the requirements 
+`meteor add coffeescript`
+`meteor add react`
