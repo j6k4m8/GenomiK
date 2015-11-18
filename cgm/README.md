@@ -4,3 +4,4 @@ the meteor-react repository that forms the frontend of this project
 ### Install the requirements 
 `meteor add coffeescript`
 `meteor add react`
+`meteor add stylus`
