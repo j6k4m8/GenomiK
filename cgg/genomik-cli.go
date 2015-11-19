@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"cg/cgg/handlers"
+	"github.com/j6k4m8/cg/cgg/cmd"
 
 	"github.com/codegangsta/cli"
 )
@@ -17,7 +17,7 @@ func main() {
 			Name:    "hello",
 			Aliases: []string{"hi"},
 			Usage:   "say hi for sanity",
-			Action:  handlers.Wrap(handlers.Hello),
+			Action:  cmd.Wrap(cmd.Hello),
 		},
 	}
 

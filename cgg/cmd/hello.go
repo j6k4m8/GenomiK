@@ -1,4 +1,4 @@
-package handlers
+package cmd
 
 import "github.com/codegangsta/cli"
 

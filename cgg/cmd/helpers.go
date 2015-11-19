@@ -1,4 +1,4 @@
-package handlers
+package cmd
 
 import (
 	"encoding/json"
@@ -28,6 +28,7 @@ func Wrap(fn WrapFunc) CLIFunc {
 			// raw JSON output because marshalling the response struct failed
 			// so trying again with an error will probably do the same?
 			fmt.Println(`{"ok":false,"content": "Failed to marshall JSON"}`)
+			return
 		}
 		fmt.Println(string(respJ))
 	}
