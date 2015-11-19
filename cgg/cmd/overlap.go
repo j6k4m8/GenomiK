@@ -27,12 +27,12 @@ func Overlap(context *cli.Context) *Response {
 		return ErrorOccured(err)
 	}
 
-	// channels on channels on channels
-	done := make(chan bool)
-	out := make(chan string)
-
 	// get number of procs and spawn that many goroutines
 	num := runtime.GOMAXPROCS(-1)
+
+	// channels on channels on channels
+	done := make(chan bool, num)
+	out := make(chan string, num*2)
 
 	step := int(len(reads) / num)
 	for start := 0; start < len(reads); start += step {
