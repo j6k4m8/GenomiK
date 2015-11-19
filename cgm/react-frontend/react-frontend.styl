@@ -25,6 +25,11 @@ body
   font-weight bold
   background-color plantation
 
+h1
+  padding 0
+  margin 0
+  border-bottom 2px solid ternary-color
+
 /* Classes */
 
 .container
@@ -36,9 +41,10 @@ body
   width space*8
   height 100%
   background-color ternary-color
-  border-right 2px solid ternary-color
   -webkit-box-shadow 4px 0 3px -2px #888
   box-shadow 4px 0 3px -2px #888
+  position fixed
+  z-index 3
 
 .search-element
   width 100%
@@ -76,4 +82,29 @@ body
 .clickable:hover
   background-color secondary-color
 
+.title-bar
+  width calc(100% - 16rem)
+  height space-medium
+  background-color secondary-color
+  position fixed
+  margin-left space*8
+  color ternary-color
+  line-height space-medium
+  vertical-align middle
+  padding-left space
+  z-index 2
+  font-size space*.6
+
+.main-content
+  position fixed
+  margin-left space*8
+  margin-top space-large
+  width calc(100% - 16rem)
+  padding-left space
+  padding-right space
+  padding-top space-small
+  box-sizing border-box
+
+.header
+  width 100%
 

@@ -8,6 +8,10 @@ share.LeftContainer = React.createClass
     else
       @setState page: val
 
+  aboutPage: ->
+    @setState page: 'About'
+    @props.setPage 'About'
+
   render: ->
     {div, img} = React.DOM
     div className: 'search-container',
@@ -22,17 +26,29 @@ share.LeftContainer = React.createClass
         "Genomes"
       if @state.page is 'Genomes'
         div {},
-          div className: 'sub-search', 'New Genome'
-          div className: 'sub-search', 'Search'
+          div
+            className: 'sub-search'
+            onClick: => @props.setPage 'NewGenome'
+            'New Genome'
+          div
+            className: 'sub-search'
+            onClick: => @props.setPage 'SearchGenome'
+            'Search'
       div
         className: 'search-element clickable'
         onClick: => @changePage 'Reads'
         "Reads"
       if @state.page is 'Reads'
         div {},
-          div className: 'sub-search', 'New Query'
-          div className: 'sub-search', 'Search'
+          div
+            className: 'sub-search'
+            onClick: => @props.setPage 'NewQuery'
+            'New Query'
+          div
+            className: 'sub-search'
+            onClick: => @props.setPage 'SearchQuery'
+            'Search'
       div
         className: 'search-element clickable'
-        onClick: => @changePage 'About'
+        onClick: => @aboutPage()
         "About"
