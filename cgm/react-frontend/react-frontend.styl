@@ -1,9 +1,10 @@
 /* Variable declarations go here */
 /* Colors */
-primary-color = #3E7E96
-secondary-color = #AEC6CF
-ternary-color = #696969
-accent = #FF9F37
+primary-color = #3E7E96 //This is a mid-dark blue
+secondary-color = #AEC6CF //Light blue
+ternary-color = #696969 //Dark Gray
+accent = #FF9F37 //Bright or pastel orange
+plantation = #FFFFFE
 
 /* Spacing */
 nudge = .2rem
@@ -20,6 +21,9 @@ body
   margin 0
   width 100%
   min-height 100%
+  font-family verdana
+  font-weight bold
+  background-color plantation
 
 /* Classes */
 
@@ -29,7 +33,29 @@ body
   position fixed
 
 .search-container
-  width space*12
+  width space*8
   height 100%
-  background-color primary-color
-  color white
+  background-color ternary-color
+  border-right 2px solid ternary-color
+  -webkit-box-shadow 4px 0 3px -2px #888
+  box-shadow 4px 0 3px -2px #888
+
+.search-element
+  width 100%
+  height space-large
+  border-bottom 2px solid secondary-color
+  line-height space-large
+  vertical-align middle
+  font-size space*.6
+  color plantation
+  box-sizing border-box
+  text-align center
+
+.logo-inner
+  max-height space*2
+  max-width space*8
+  margin-left - space
+
+
+
+
