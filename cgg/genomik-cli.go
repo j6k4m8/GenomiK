@@ -19,6 +19,13 @@ func main() {
 			Usage:   "say hi for sanity",
 			Action:  cmd.Wrap(cmd.Hello),
 		},
+		{
+			Name:    "overlap",
+			Aliases: []string{"bbr"},
+			Usage: "provide a FASTA file path argument and the overlaps " +
+				"will be computed.",
+			Action: cmd.Wrap(cmd.Overlap),
+		},
 	}
 
 	app.Run(os.Args)

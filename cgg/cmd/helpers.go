@@ -23,6 +23,9 @@ type WrapFunc func(*cli.Context) *Response
 func Wrap(fn WrapFunc) CLIFunc {
 	return func(context *cli.Context) {
 		resp := fn(context)
+		if resp == nil {
+			resp = &Response{Ok: false, Content: "Nil response."}
+		}
 		respJ, err := json.Marshal(resp)
 		if err != nil {
 			// raw JSON output because marshalling the response struct failed
@@ -31,5 +34,19 @@ func Wrap(fn WrapFunc) CLIFunc {
 			return
 		}
 		fmt.Println(string(respJ))
+	}
+}
+
+func ErrorMissingArgument() *Response {
+	return &Response{
+		Ok:      false,
+		Content: "Missing argument.",
+	}
+}
+
+func ErrorOccured(e error) *Response {
+	return &Response{
+		Ok:      false,
+		Content: e.Error(),
 	}
 }
