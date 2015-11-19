@@ -25,7 +25,7 @@ body
   font-weight bold
   background-color plantation
 
-h1
+h1, h2
   padding 0
   margin 0
   border-bottom 2px solid ternary-color
@@ -102,9 +102,27 @@ h1
   width calc(100% - 16rem)
   padding-left space
   padding-right space
-  padding-top space-small
+  padding-top space-micro
   box-sizing border-box
 
 .header
   width 100%
+
+.upload-button
+  width 200px
+  height 60px
+  line-height 60px
+  vertical-align middle
+  text-align center
+  color plantation
+  background-color primary-color
+  border-radius 2px
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 0.2s;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  margin-top 20px
+
+.upload-button:active
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+  transition-delay: 0s;
 
