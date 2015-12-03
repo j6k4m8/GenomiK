@@ -21,3 +21,4 @@ insecure                # Allow all DB writes from clients (for prototyping)
 coffeescript
 react
 stylus
+materialize:materialize
