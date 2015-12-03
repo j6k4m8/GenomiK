@@ -18,4 +18,4 @@ Meteor.methods({
             return Genomes.insert(_.omit(gen, '_id'));
         }
     }
-})
+});
