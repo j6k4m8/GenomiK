@@ -9,7 +9,7 @@ import (
 
 type Response struct {
 	Ok      bool   `json:"ok"`
-	Content string `json:"content"`
+	Content interface{} `json:"content"`
 }
 
 type CLIFunc func(*cli.Context)

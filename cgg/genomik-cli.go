@@ -26,6 +26,12 @@ func main() {
 				"will be computed.",
 			Action: cmd.Wrap(cmd.Overlap),
 		},
+		{
+			Name: "unitig",
+			Usage: "provide a FASTA file path argument and the unitigs will " +
+				"be computed.",
+			Action: cmd.Wrap(cmd.Unitig),
+		},
 	}
 
 	app.Run(os.Args)

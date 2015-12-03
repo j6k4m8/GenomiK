@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"os"
 	"runtime"
 	"strings"
@@ -16,15 +15,40 @@ type read struct {
 	seq string
 }
 
+type readPair struct {
+	left,
+	right *read
+}
+
 func Overlap(context *cli.Context) *Response {
 	path := context.Args().First()
 	if path == "" {
 		return ErrorMissingArgument()
 	}
 
-	reads, err := parse_fasta(path)
+	pairs, err := compute_overlaps(path)
+
 	if err != nil {
 		return ErrorOccured(err)
+	}
+
+	pairLabels := make(map[string]string)
+	for k, v := range pairs {
+		pairLabels[k] = v.right.label
+	}
+
+	return &Response{
+		Ok:      true,
+		Content: pairLabels,
+	}
+
+}
+
+func compute_overlaps(path string) (map[string]readPair, error) {
+
+	reads, err := parse_fasta(path)
+	if err != nil {
+		return nil, err
 	}
 
 	// get number of procs and spawn that many goroutines
@@ -32,7 +56,7 @@ func Overlap(context *cli.Context) *Response {
 
 	// channels on channels on channels
 	done := make(chan bool, num)
-	out := make(chan string, num*2)
+	out := make(chan readPair, num*2)
 
 	step := int(len(reads) / num)
 	for start := 0; start < len(reads); start += step {
@@ -42,7 +66,7 @@ func Overlap(context *cli.Context) *Response {
 		}
 		go find_overlaps(out, done, reads, start, end)
 	}
-	var buf bytes.Buffer
+	pairs := make(map[string]readPair)
 	num_done := 0
 	// for == while because go is go
 	for num_done < num {
@@ -52,17 +76,13 @@ func Overlap(context *cli.Context) *Response {
 		case <-done:
 			num_done++
 		case i := <-out:
-			buf.WriteString(i)
-			buf.WriteByte('\n')
+			pairs[i.left.label] = i
 		}
 	}
 	close(done)
 	close(out)
-	return &Response{
-		Ok:      true,
-		Content: buf.String(),
-	}
 
+	return pairs, nil
 }
 
 func parse_fasta(path string) ([]read, error) {
@@ -98,12 +118,12 @@ func parse_fasta(path string) ([]read, error) {
 	return reads, nil
 }
 
-func find_overlaps(out chan<- string, done chan<- bool, reads []read, start, end int) {
+func find_overlaps(out chan<- readPair, done chan<- bool, reads []read, start, end int) {
 	defer func() { done <- true }()
 	for i := start; i < end; i++ {
 		t_r := reads[i]
 		min_len := 40
-		min_len_label := ""
+		var min_len_read *read
 		for j, p_r := range reads {
 			if i == j {
 				continue
@@ -111,13 +131,13 @@ func find_overlaps(out chan<- string, done chan<- bool, reads []read, start, end
 			len_overlap := suffix_prefix_match(t_r.seq, p_r.seq, min_len)
 			if len_overlap > min_len {
 				min_len = len_overlap
-				min_len_label = p_r.label
+				min_len_read = &p_r
 			} else if len_overlap == min_len {
-				min_len_label = ""
+				min_len_read = nil
 			}
 		}
-		if min_len_label != "" {
-			out <- fmt.Sprintf("%s %s %d", t_r.label, min_len_label, min_len)
+		if min_len_read != nil {
+			out <- readPair{left: &t_r, right: min_len_read}
 		}
 	}
 }
