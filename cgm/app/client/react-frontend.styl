@@ -22,6 +22,14 @@ h2
   border-bottom 2px solid ternary-color
   font-size space*1
 
+header, main, footer {
+  padding-left: 240px; }
+
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0; }
+ }
+
 /* Classes */
 
 // .container
@@ -79,11 +87,9 @@ h2
   vertical-align middle
   font-size space*1.2
 
-.main-content
-  padding-top space
-
 .clickable
   cursor pointer
+
 
 // .sub-search
 //   width 100%

@@ -21,8 +21,6 @@ share.LeftContainer = React.createClass
     ul
       className: 'side-nav fixed'
       id: 'nav-mobile'
-      style:
-        left: '0px'
       li className: 'logo',
         div className: 'search-element',
           img
