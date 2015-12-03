@@ -16,15 +16,6 @@ space-large = 4rem
 
 /* Defaults */
 
-body
-  padding 0
-  margin 0
-  width 100%
-  min-height 100%
-  font-family verdana
-  font-weight bold
-  background-color plantation
-
 h2
   padding 0
   margin 0
@@ -60,16 +51,39 @@ h2
   box-sizing border-box
   text-align center
   color plantation
-  margin-bottom space-small
-  margin-top space-small
+  margin-bottom space
+  margin-top space
 
 .collapsible:hover
   background-color white
+
+.logo:hover
+  background-color white !important
+
+.sub-nav
+  line-height space-medium !important
+  vertical-align middle !important
+  height space-medium !important
+
+.nav-header.active
+  background-color secondary-color
 
 .nav-element
   height space-large*1.1
   line-height space-large !important
   vertical-align middle !important
+
+.top-nav
+  height space*4
+  line-height space*4
+  vertical-align middle
+  font-size space*1.2
+
+.main-content
+  padding-top space
+
+.clickable
+  cursor pointer
 
 // .sub-search
 //   width 100%
@@ -86,9 +100,10 @@ h2
 //   background-color secondary-color
 
 .logo-inner
-  max-height space*2
-  max-width space*8
-  margin-left - space
+  max-height space*2.5
+  max-width space*10
+  margin-left - space*.5
+  margin-top -.4rem
 
 // .clickable
 //   cursor pointer

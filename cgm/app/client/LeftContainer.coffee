@@ -8,6 +8,10 @@ share.LeftContainer = React.createClass
     else
       @setState page: val
 
+  setPageWithHighlight: (val) ->
+    @props.setPage val
+    @setState page: val
+
   aboutPage: ->
     @setState page: 'About'
     @props.setPage 'About'
@@ -17,6 +21,8 @@ share.LeftContainer = React.createClass
     ul
       className: 'side-nav fixed'
       id: 'nav-mobile'
+      style:
+        left: '0px'
       li className: 'logo',
         div className: 'search-element',
           img
@@ -25,64 +31,41 @@ share.LeftContainer = React.createClass
             alt: 'Genomik'
       li className: 'no-padding',
         ul className: 'collapsible collapsible-accordion',
-          li className: 'bold',
+          li className: 'bold nav-header',
             a
               className: 'nav-element collapsible-header waves-effect waves-teal'
               'Genomes'
             div
               className: 'collapsible-body'
               ul {},
-                li {},
-                  a className: 'sub-nav waves-effect', 'New Genome'
-                li {},
-                  a className: 'sub-nav waves-effect', 'My Genomes'
+                li className: "#{'red lighten-1' if @state.page is 'NewGenome'}",
+                  a
+                    className: "sub-nav clickable #{'white-text' if @state.page is 'NewGenome'}"
+                    onClick: => @setPageWithHighlight 'NewGenome'
+                    'New Genome'
+                li className: "#{'red lighten-1' if @state.page is 'SearchGenome'}",
+                  a
+                    className: "sub-nav clickable #{'white-text' if @state.page is 'SearchGenome'}"
+                    onClick: => @setPageWithHighlight 'SearchGenome'
+                    'My Genomes'
           li className: 'bold',
             a
               className: 'nav-element collapsible-header waves-effect waves-teal'
               'Reads'
             div className: 'collapsible-body',
               ul {},
-                li {},
-                  a className: 'sub-nav waves-effect', 'New Query'
-                li {},
-                  a className: 'sub-nav waves-effect', 'My Reads'
+                li className: "#{'red lighten-1' if @state.page is 'NewQuery'}",
+                  a
+                    className: "sub-nav clickable #{'white-text' if @state.page is 'NewQuery'}"
+                    onClick: => @setPageWithHighlight 'NewQuery'
+                    'New Query'
+                li className: "#{'red lighten-1' if @state.page is 'SearchQuery'}",
+                  a
+                    className: "sub-nav clickable #{'white-text' if @state.page is 'SearchQuery'}"
+                    onClick: => @setPageWithHighlight 'SearchQuery'
+                    'My Reads'
       li className: 'nav-element',
-        a className: 'waves-effect waves-teal', 'About'
-        # div className: 'side-nav',
-        #   div className: 'search-element',
-        #     img
-        #       className: 'logo-inner'
-        #       src: '/resources/logo.png'
-        #       alt: 'Genomik'
-        #   div
-        #     className: 'search-element clickable'
-        #     onClick: => @changePage 'Genomes'
-        #     "Genomes"
-        #   if @state.page is 'Genomes'
-        #     div {},
-        #       div
-        #         className: 'sub-search'
-        #         onClick: => @props.setPage 'NewGenome'
-        #         'New Genome'
-        #       div
-        #         className: 'sub-search'
-        #         onClick: => @props.setPage 'SearchGenome'
-        #         'My Genomes'
-        #   div
-        #     className: 'search-element clickable'
-        #     onClick: => @changePage 'Reads'
-        #     "Reads"
-        #   if @state.page is 'Reads'
-        #     div {},
-        #       div
-        #         className: 'sub-search'
-        #         onClick: => @props.setPage 'NewQuery'
-        #         'New Query'
-        #       div
-        #         className: 'sub-search'
-        #         onClick: => @props.setPage 'SearchQuery'
-        #         'My Queries'
-        #   div
-        #     className: 'search-element clickable'
-        #     onClick: => @aboutPage()
-        #     "About"
+        a
+          className: 'waves-effect waves-teal'
+          onClick: => @setPageWithHighlight 'About'
+          'About'

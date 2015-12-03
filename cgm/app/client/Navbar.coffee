@@ -1,4 +1,4 @@
-share.App = React.createClass
+share.Navbar = React.createClass
   getInitialState: ->
     page: 'None'
     title: 'About'
@@ -13,7 +13,7 @@ share.App = React.createClass
   render: ->
     {div, a, i} = React.DOM
     div {},
-      div className: 'top-nav red lighten-1',
+      div className: 'top-nav blue lighten-2',
         div className: 'container',
           div className: 'nav-wrapper',
             a className: 'page-title white-text', @state.title
@@ -23,13 +23,4 @@ share.App = React.createClass
           dataActivates: 'nav-mobile'
           className: 'button-collapse top-nav full hide-on-large-only'
           i className: 'mdi-navigation-menu'
-      #Need to go through and add the navbar here to make it responsive
       React.createElement(share.LeftContainer, setPage: @setPage)
-      # div className: 'title-bar', @state.title
-      div className: 'container',
-        div className: 'row',
-          div className: 'col s12 m9 l10',
-            if @state.page is 'NewGenome'
-              React.createElement(share.NewGenome, null)
-            else
-              div {}, "This Page Not Implemented Yet"
