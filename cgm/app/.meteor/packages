@@ -25,3 +25,4 @@ jchristman:exec
 materialize:materialize
 cfs:filesystem
 cfs:standard-packages
+accounts-base
