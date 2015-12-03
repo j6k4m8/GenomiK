@@ -3,13 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/codegangsta/cli"
 )
 
 type Response struct {
-	Ok      bool   `json:"ok"`
-	Content string `json:"content"`
+	Ok      bool        `json:"ok"`
+	Content interface{} `json:"content"`
 }
 
 type CLIFunc func(*cli.Context)
@@ -49,4 +50,61 @@ func ErrorOccured(e error) *Response {
 		Ok:      false,
 		Content: e.Error(),
 	}
+}
+
+type StringSet struct {
+	contents map[string]int8
+	lk       *sync.Mutex
+}
+
+func NewStringSet() *StringSet {
+	return &StringSet{
+		contents: make(map[string]int8),
+	}
+}
+
+func NewSafeStringSet() *StringSet {
+	return &StringSet{
+		contents: make(map[string]int8),
+		lk:       &sync.Mutex{},
+	}
+}
+
+func (s *StringSet) IsSafe() bool {
+	return s.lk != nil
+}
+
+func (s *StringSet) AddContains(value string) bool {
+	if s.IsSafe() {
+		s.lk.Lock()
+		defer s.lk.Unlock()
+	}
+	if _, exists := s.contents[value]; exists {
+		return false
+	}
+	s.contents[value] = 0
+	return true
+}
+
+func (s *StringSet) Add(value string) {
+	if s.IsSafe() {
+		s.lk.Lock()
+		defer s.lk.Unlock()
+	}
+	s.contents[value] = 0
+}
+
+func (s *StringSet) Remove(value string) {
+	if s.IsSafe() {
+		s.lk.Lock()
+		defer s.lk.Unlock()
+	}
+	delete(s.contents, value)
+}
+
+func (s *StringSet) Contains(value string) bool {
+	s.lk.Lock()
+	defer s.lk.Unlock()
+	_, exists := s.contents[value]
+	return exists
 }
