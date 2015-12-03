@@ -33,7 +33,7 @@ share.LeftContainer = React.createClass
           div
             className: 'sub-search'
             onClick: => @props.setPage 'SearchGenome'
-            'Search'
+            'My Genomes'
       div
         className: 'search-element clickable'
         onClick: => @changePage 'Reads'
@@ -47,7 +47,7 @@ share.LeftContainer = React.createClass
           div
             className: 'sub-search'
             onClick: => @props.setPage 'SearchQuery'
-            'Search'
+            'My Queries'
       div
         className: 'search-element clickable'
         onClick: => @aboutPage()
