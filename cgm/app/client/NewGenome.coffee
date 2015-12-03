@@ -3,10 +3,10 @@ share.NewGenome = React.createClass
     console.log 'Upload Genome!'
 
   render: ->
-    {div, h2} = React.DOM
+    {div, h2, a} = React.DOM
     div {},
       h2 className: 'header', 'Assemble A New Genome'
-      div
-        className: 'upload-button'
+      a
+        className: 'waves-effect waves-light btn'
         onClick: => @uploadGenome
         'Upload'
