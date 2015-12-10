@@ -7,6 +7,7 @@ var infoRoutes = [
 // Routes that don't require user to be logged in
 var unprotectedRoutes = [
     'home',
+    'atSignIn',
 ].concat(infoRoutes);
 
 // Routes that can be simply 'routed' without any
@@ -28,6 +29,20 @@ Router.configure({
 
 // Add the 'signIn' route.
 AccountsTemplates.configureRoute('signIn');
+AccountsTemplates.addFields([
+    {
+        _id: 'first_name',
+        type: 'text',
+        displayName: "First Name",
+        required: true
+    },
+    {
+        _id: 'last_name',
+        type: 'text',
+        displayName: "Last Name",
+        required: true
+    }
+]);
 
 // The default (Home) template
 Router.route('/', function() {

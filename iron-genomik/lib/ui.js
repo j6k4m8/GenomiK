@@ -7,6 +7,8 @@ UI.registerHelper('title', function(title) {
 var image_urls = {
     _img_about_card:    function() { return 'http://jordan.matelsky.com/art/img/Brain01.png' },
     _img_tech_card:     function() { return '/campus.png' },
+    
+    _img_yeast:     function() { return '/yeast.png' },
 };
 
 for (var k in image_urls) {

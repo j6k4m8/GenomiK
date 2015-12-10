@@ -1,0 +1,36 @@
+<template name="loggedInHome">
+    <div class="row">
+        <div class="col s12">
+            <h1>Welcome, {{ currentUser.profile.first_name }}!</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s4">
+            <div class="card hoverable">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="{{ _img_yeast }}">
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">Sc 2.0<i class="material-icons right">more_vert</i></span>
+                    <p><a href="#" class="activator">See More</a></p>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4">
+                        Sc 2.0
+                        <i class="material-icons right">close</i>
+                    </span>
+                    <span class="grey-text">
+                        <em>User-Uploaded Genome</em>
+                    </span>
+                    <p>
+                        <ul>
+                            <li><strong>Date:</strong> Today</li>
+                            <li><strong>Author:</strong> Jordan Matelsky</li>
+                            <li><strong>Assembly:</strong> <a href="#">FASTA</a></li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
