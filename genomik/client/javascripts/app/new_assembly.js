@@ -11,7 +11,7 @@ Template.new_assembly.events({
             } else {
                 if (Meteor.isClient) {
                     Router.go('home');
-                    Materialize.toast('New upload started: ' + fileObj.jobName);
+                    Materialize.toast('New upload started: ' + fileObj.jobName, 5000);
                 };
             }
         });
