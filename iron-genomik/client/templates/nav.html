@@ -1,0 +1,21 @@
+<template name="nav">
+    <nav>
+        <div class="nav-wrapper cyan">
+            <a href="#!" class="brand-logo">GenomiK</a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                {{> _nav_menu }}
+            </ul>
+            <ul class="side-nav" id="mobile-demo">
+                {{> _nav_menu }}
+            </ul>
+        </div>
+    </nav>
+    <script type="text/javascript">
+        $(".button-collapse").sideNav();
+    </script>
+</template>
+
+<template name="_nav_menu">
+    <li><a href="{{ pathFor 'home' }}">Home</a></li>
+</template>
