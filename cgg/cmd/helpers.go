@@ -3,17 +3,22 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"sync"
 
 	"github.com/codegangsta/cli"
 )
 
+// Response defines a standard JSON response type for a command.
+// Content is generic but should be able to be marshalled by encoding/json.
 type Response struct {
 	Ok      bool        `json:"ok"`
 	Content interface{} `json:"content"`
 }
 
+// CLIFunc defines an expected function type for codegangsta/cli.
 type CLIFunc func(*cli.Context)
+
+// WrapFunc defines an expected function type for a soon-to-be wrapped function
+// for JSON output with codegangsta/cli.
 type WrapFunc func(*cli.Context) *Response
 
 // Wrap takes a WrapFunc, calls it with the given context, converts its output
@@ -38,6 +43,8 @@ func Wrap(fn WrapFunc) CLIFunc {
 	}
 }
 
+// ErrorMissingArgument returns a response for a command that is missing an
+// argument.
 func ErrorMissingArgument() *Response {
 	return &Response{
 		Ok:      false,
@@ -45,66 +52,11 @@ func ErrorMissingArgument() *Response {
 	}
 }
 
+// ErrorOccured wraps a Response object around an error that occurred in a
+// command.
 func ErrorOccured(e error) *Response {
 	return &Response{
 		Ok:      false,
 		Content: e.Error(),
 	}
-}
-
-type StringSet struct {
-	contents map[string]int8
-	lk       *sync.Mutex
-}
-
-func NewStringSet() *StringSet {
-	return &StringSet{
-		contents: make(map[string]int8),
-	}
-}
-
-func NewSafeStringSet() *StringSet {
-	return &StringSet{
-		contents: make(map[string]int8),
-		lk:       &sync.Mutex{},
-	}
-}
-
-func (s *StringSet) IsSafe() bool {
-	return s.lk != nil
-}
-
-func (s *StringSet) AddContains(value string) bool {
-	if s.IsSafe() {
-		s.lk.Lock()
-		defer s.lk.Unlock()
-	}
-	if _, exists := s.contents[value]; exists {
-		return false
-	}
-	s.contents[value] = 0
-	return true
-}
-
-func (s *StringSet) Add(value string) {
-	if s.IsSafe() {
-		s.lk.Lock()
-		defer s.lk.Unlock()
-	}
-	s.contents[value] = 0
-}
-
-func (s *StringSet) Remove(value string) {
-	if s.IsSafe() {
-		s.lk.Lock()
-		defer s.lk.Unlock()
-	}
-	delete(s.contents, value)
-}
-
-func (s *StringSet) Contains(value string) bool {
-	s.lk.Lock()
-	defer s.lk.Unlock()
-	_, exists := s.contents[value]
-	return exists
 }
