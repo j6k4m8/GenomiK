@@ -18,11 +18,9 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 autopublish             # Publish all data to the clients (for prototyping)
 insecure                # Allow all DB writes from clients (for prototyping)
-coffeescript
-react
-stylus
-jchristman:exec
+iron:router
 materialize:materialize
-cfs:filesystem
-cfs:standard-packages
-accounts-base
+underscore
+accounts-password
+useraccounts:materialize
+useraccounts:iron-routing
