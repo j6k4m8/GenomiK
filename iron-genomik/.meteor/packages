@@ -23,3 +23,4 @@ materialize:materialize
 underscore
 accounts-password
 useraccounts:materialize
+useraccounts:iron-routing

@@ -1,7 +1,7 @@
 <template name="nav">
     <nav>
-        <div class="nav-wrapper cyan">
-            <a href="#!" class="brand-logo">GenomiK</a>
+        <div class="nav-wrapper white black-text">
+            &nbsp;<a href="#!" class="brand-logo">GenomiK</a>
             <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
             <ul class="right hide-on-med-and-down">
                 {{> _nav_menu }}
@@ -18,4 +18,5 @@
 
 <template name="_nav_menu">
     <li><a href="{{ pathFor 'home' }}">Home</a></li>
+    <li><a href="{{ pathFor 'home' }}">{{> atNavButton }}</a></li>
 </template>
