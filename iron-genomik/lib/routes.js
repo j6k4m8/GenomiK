@@ -55,3 +55,7 @@ Router.route('/', function() {
 for (var i = 0; i < simpleRoutes.length; i++) {
     Router.route(simpleRoutes[i]);
 }
+
+Router.route('assembly/new', function() {
+    this.render('new_assembly')
+});

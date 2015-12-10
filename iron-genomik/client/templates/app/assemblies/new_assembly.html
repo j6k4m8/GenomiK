@@ -1,0 +1,48 @@
+<template name="new_assembly">
+    <div class="row">
+        <div class="col m3">&nbsp;</div>
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">New Assembly</span>
+                    <p>
+                        Create a new assembly using our <a href="{{ pathFor 'algorithms' }}" class="orange-text">assembly algorithms</a>. Simply upload a FASTA file &mdash; we'll email you once your results are ready.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col m2">&nbsp;</div>
+        <div class="col s12 m8">
+            <div class="input-field col s6">
+                <input placeholder="Assembly Name" id="name" type="text" class="validate active">
+                <label for="name">Assembly Name</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="author" type="text" disabled value="{{ currentUser.profile.first_name }} {{ currentUser.profile.last_name }}" class="active">
+                <label for="author">Author</label>
+            </div>
+            <div class="col s6 m5 l4 valign-wrapper">
+                <div class="switch valign">
+                    <label>
+                        <br>
+                        Private
+                        <input type="checkbox">
+                        <span class="lever"></span>
+                        Public
+                    </label>
+                </div>
+            </div>
+            <div class="col s6 m7 l8">
+                <p class="grey-text">
+                    If you set your project to be <b>Public</b>, other researchers will be able to see your assembly under <a href="#">Public Projects</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        Materialize.updateTextFields();
+    </script>
+</template>
