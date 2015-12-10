@@ -29,7 +29,7 @@ func cost(c0 string, c1 string) int {
 // Compute the Smith-Waterman alignment matrix. Not optimized for parallelism
 // because of the dependency of matrix formulation.
 // @j6k4m8
-func buildSW(p string, t string) int {
+func SW(p string, t string) int {
 
     // Create our matrix, called h by convention.
     h := [len(p)][len(t)]int{}
