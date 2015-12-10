@@ -5,7 +5,17 @@ import (
 	"fmt"
 )
 
+
+// An alignment stores information about the actual string as well
+// as its position.
+type alignment struct {
+	offset int,
+	seq string
+}
+
+
 // Calculate the "cost" (for insertion into alignment matrices) of two strings
+// @j6k4m8
 func cost(c0 string, c1 string) int {
     // Using the scores described by Smith et al (1981). This is effectively
 	// changed to { 0, 2 } in the SW implementation because we max against 0.
