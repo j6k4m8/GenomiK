@@ -26,21 +26,47 @@ func cost(c0 string, c1 string) int {
     }
 }
 
-// Compute the Smith-Waterman optimal alignment
-func AlignSW(p string, t string) int {
+// Compute the Smith-Waterman alignment matrix. Not optimized for parallelism
+// because of the dependency of matrix formulation.
+// @j6k4m8
+func buildSW(p string, t string) int {
 
     // Create our matrix, called h by convention.
     h := [len(p)][len(t)]int{}
-
+	// Populate the matrix:
     for x := 0; x < len(p); x++ {
         for y := 0; y < len(t); y++ {
             if x == 0 || y == 0 {
                 h[x][y] = 0;
             } else {
                 h[x][y] = max(0, h[x-1][y], h[x][y-1], cost(p[x], t[y]))
-				fmt.Printf("%d\n", h[x][y])
             }
         }
     }
 
+	// Compute the best reverse-path of an alignment matrix, starting with the
+	// cell at max(x), max(y).
+	y := len(t)
+	x := len(p)
+
+	path := ""
+
+	// In the ambiguous case of more than one value being a possibility, this
+	// algo 'tries' to minimize y as quickly as possible.
+	for y > 0 {
+		switch min(h[x-1][y], h[x-1][y-1], h[x][y-1]) {
+		case h[x-1][y-1]:
+			path = p[x--] + path
+			y--
+		case h[x][y-1]:
+			y--
+			path = "-" + path
+		case h[x-1][y]:
+			path = p[x--] + path
+		}
+	}
+
+	// Now we store the sequence in path, and we store the offset in the
+	// remaining value of y.
+	return alignment{seq: path, offset: y}
 }
