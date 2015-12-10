@@ -61,3 +61,13 @@ Router.route('assembly/new', function() {
 }, {
     name: 'new_assembly'
 });
+
+
+Router.route('assembly/:id', function() {
+    this.render('assembly_page')
+}, {
+    name: 'assembly_page',
+    data: function() {
+        return RawFastas.findOne(this.params.id)
+    }
+});

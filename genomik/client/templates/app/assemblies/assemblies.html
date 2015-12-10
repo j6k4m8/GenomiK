@@ -6,59 +6,61 @@
     </div>
     <div class="row">
         {{# each user_owned_assemblies }}
-            {{> assembly_card }}
+            <div class="col l3 m4 s6">
+                {{> assembly_card }}
+            </div>
         {{/ each }}
-        {{> new_assembly_card }}
+        <div class="col l3 m4 s6">
+            {{> new_assembly_card }}
+        </div>
     </div>
 </template>
 
 
 <template name="assembly_card">
-    <div class="col l3 m4 s6">
-        <div class="card hoverable">
-            <div class="card-image waves-effect waves-block waves-light">
-                <img class="activator" src="{{ _img_yeast }}">
-            </div>
-            <div class="card-content">
-                <span class="card-title activator grey-text text-darken-4">{{ jobName }}<i class="material-icons right">more_vert</i></span>
-                <p><a href="#" class="activator">See More</a></p>
-            </div>
-            <div class="card-reveal">
-                <span class="card-title grey-text text-darken-4">
-                    {{ jobName }}
-                    <i class="material-icons right">close</i>
-                </span>
-                <span class="grey-text">
-                    <em>User-Uploaded Assembly</em>
-                </span>
-                <p>
-                    <ul>
-                        <li><strong>Date:</strong> {{ cal uploadedAt }}</li>
-                        <li><strong>Author:</strong> {{ ownerName }}</li>
-                        <li><strong>Assembly:</strong> <a href="#">FASTA</a></li>
-                    </ul>
-                </p>
-            </div>
+    <div class="card hoverable">
+        <div class="card-image waves-effect waves-block waves-light">
+            <a href="{{ pathFor 'assembly_page' id=this._id }}">
+                <img src="{{ _img_yeast }}">
+            </a>
+        </div>
+        <div class="card-content">
+            <span class="card-title activator grey-text text-darken-4">{{ jobName }}<i class="material-icons right">more_vert</i></span>
+            <p><a href="#" class="activator">See More</a></p>
+        </div>
+        <div class="card-reveal">
+            <span class="card-title grey-text text-darken-4">
+                {{ jobName }}
+                <i class="material-icons right">close</i>
+            </span>
+            <span class="grey-text">
+                <em>User-Uploaded Assembly</em>
+            </span>
+            <p>
+                <ul>
+                    <li><strong>Date:</strong> {{ cal uploadedAt }}</li>
+                    <li><strong>Author:</strong> {{ ownerName }}</li>
+                    <li><strong>Assembly:</strong> <a href="#">FASTA</a></li>
+                </ul>
+            </p>
         </div>
     </div>
 </template>
 
 
 <template name="new_assembly_card">
-    <div class="col l3 m4 s6">
-        <a href="{{ pathFor 'new_assembly' }}">
-            <div class="card hoverable">
-                <div class="card-image waves-effect waves-block waves-light">
-                    <img src="{{ _img_yeast }}">
-                </div>
-                <div class="card-content">
-                    <span class="card-title activator cyan-text">
-                        Add New
-                        <i class="material-icons">add</i>
-                    </span>
-                    <p><span class="white-text">&nbsp;</span></p>
-                </div>
+    <a href="{{ pathFor 'new_assembly' }}">
+        <div class="card hoverable">
+            <div class="card-image waves-effect waves-block waves-light">
+                <img src="{{ _img_yeast }}">
             </div>
-        </a>
-    </div>
+            <div class="card-content">
+                <span class="card-title activator cyan-text">
+                    Add New
+                    <i class="material-icons">add</i>
+                </span>
+                <p><span class="white-text">&nbsp;</span></p>
+            </div>
+        </div>
+    </a>
 </template>
