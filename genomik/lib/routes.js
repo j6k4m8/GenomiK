@@ -58,4 +58,6 @@ for (var i = 0; i < simpleRoutes.length; i++) {
 
 Router.route('assembly/new', function() {
     this.render('new_assembly')
+}, {
+    name: 'new_assembly'
 });
