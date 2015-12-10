@@ -1,3 +1,5 @@
+package cmd
+
 // StringSet provides a quick implementation of a Set for strings.
 import "sync"
 
