@@ -21,3 +21,5 @@ insecure                # Allow all DB writes from clients (for prototyping)
 iron:router
 materialize:materialize
 underscore
+accounts-password
+useraccounts:materialize
