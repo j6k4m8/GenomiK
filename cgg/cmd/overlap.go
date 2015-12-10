@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/codegangsta/cli"
+	"github.com/j6k4m8/cg/cgg/runner"
 )
 
 type read struct {
@@ -52,36 +52,28 @@ func computeOverlap(path string) (map[string]readPair, error) {
 		return nil, err
 	}
 
-	// get number of procs and spawn that many goroutines
-	num := runtime.GOMAXPROCS(-1)
+	r := runner.NewMax(
+		func(i int, r runner.Runner) (interface{}, error) {
+			step := int(len(reads) / r.NumRoutines())
+			start := step * i
+			end := start + step
+			if end > len(reads) {
+				end = len(reads)
+			}
+			return findOverlaps(reads, start, end)
+		},
+	)
 
-	// channels on channels on channels
-	done := make(chan bool, num)
-	out := make(chan readPair, num*2)
-
-	step := int(len(reads) / num)
-	for start := 0; start < len(reads); start += step {
-		end := start + step
-		if end > len(reads) {
-			end = len(reads)
-		}
-		go findOverlaps(out, done, reads, start, end)
-	}
 	pairs := make(map[string]readPair)
-	numDone := 0
-	// for == while because go is go
-	for numDone < num {
-		// pick between channel output depending on availability
-		// otherwise would be blocking and that's icky
-		select {
-		case <-done:
-			numDone++
-		case i := <-out:
-			pairs[i.Left.Label] = i
+	r.Run()
+	results, _ := r.Wait()
+
+	for _, r := range results {
+		rS := r.([]readPair)
+		for _, rP := range rS {
+			pairs[rP.Left.Label] = rP
 		}
 	}
-	close(done)
-	close(out)
 
 	return pairs, nil
 }
@@ -119,8 +111,8 @@ func parseFasta(path string) ([]read, error) {
 	return reads, nil
 }
 
-func findOverlaps(out chan<- readPair, done chan<- bool, reads []read, start, end int) {
-	defer func() { done <- true }()
+func findOverlaps(reads []read, start, end int) ([]readPair, error) {
+	ret := make([]readPair, 0, end-start)
 	for i := start; i < end; i++ {
 		tR := reads[i]
 		minLen := 40
@@ -138,9 +130,12 @@ func findOverlaps(out chan<- readPair, done chan<- bool, reads []read, start, en
 			}
 		}
 		if minLenRead != -1 {
-			out <- readPair{Left: &tR, Right: &reads[minLenRead], Overlap: minLen}
+			ret = append(ret, readPair{
+				Left: &tR, Right: &reads[minLenRead], Overlap: minLen,
+			})
 		}
 	}
+	return ret, nil
 }
 
 func suffixPrefixMatch(str1, str2 string, minOverlap int) int {
