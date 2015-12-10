@@ -1,0 +1,38 @@
+<template name="about"> {{ title 'About' }}
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="col m6">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="{{ _img_about_card }}">
+                            <span class="card-title">About The Project</span>
+                        </div>
+                        <div class="card-content">
+                            <p>
+                                GenomiK aims to solve two issues: First, it prevents the need of running algorithms locally, and excises this process to the cloud where it can be dramatically hastened. Second, it uses consistent algorithms which are well-documented and are not updated or changed over time. (See our <a href="{{ pathFor 'algorithms' }}">Algorithms page</a> for more details.) This is beneficial as it allows an experimenter to reliably and reproducibly arrive at the same results, and these results can be shared with others with ensured consistency.
+                            </p>
+                            <p>
+                                For more information about the technology in use, see <a href="#design">the Technology & Design section</a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col m6">
+                    <div class="card" id="design">
+                        <div class="card-image">
+                            <img src="{{ _img_tech_card }}">
+                            <span class="card-title">Technology & Design</span>
+                        </div>
+                        <div class="card-content">
+                            <p>
+                                We are running our framework on an Amazon EC2 Medium.m1 instance with ##? cores to provide (##?). The frontend is served by a Node-driven framework called Meteor, which allows us to asynchronously serve large amounts of traffic at a time. (Benchmarks?)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -2,3 +2,13 @@
 UI.registerHelper('title', function(title) {
     document.title = title + " | GenomiK";
 });
+
+
+var image_urls = {
+    _img_about_card:    function() { return 'http://jordan.matelsky.com/art/img/Brain01.png' },
+    _img_tech_card:     function() { return '/campus.png' },
+};
+
+for (var k in image_urls) {
+    UI.registerHelper(k, image_urls[k]);
+}
