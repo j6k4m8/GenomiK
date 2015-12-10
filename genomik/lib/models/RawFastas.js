@@ -1,5 +1,5 @@
-Assemblies = new FS.Collection("assemblies", {
-    stores: [new FS.Store.FileSystem("assemblies", {path: "~/gk/uploads/assemblies"})],
+RawFastas = new FS.Collection("raw_fastas", {
+    stores: [new FS.Store.FileSystem("raw_fastas", {path: "~/gk/uploads/raw_fastas"})],
     allow: {
         extensions: ['fa', 'fasta']
     },
@@ -13,8 +13,8 @@ Assemblies = new FS.Collection("assemblies", {
 });
 
 
-Assemblies.allow({
-    'insert': function () {
-        return Meteor.isServer;
+RawFastas.allow({
+    'insert': function() {
+        return !!Meteor.userId();
     }
 });

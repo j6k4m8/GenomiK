@@ -16,7 +16,7 @@
         <div class="col m2">&nbsp;</div>
         <div class="col s12 m8">
             <div class="input-field col s6">
-                <input placeholder="Assembly Name" id="name" type="text" class="validate active">
+                <input placeholder="Assembly Name" id="job-name" type="text" class="validate active">
                 <label for="name">Assembly Name</label>
             </div>
             <div class="input-field col s6">
@@ -28,7 +28,7 @@
                     <label>
                         <br>
                         Private
-                        <input type="checkbox">
+                        <input type="checkbox" id="job-public">
                         <span class="lever"></span>
                         Public
                     </label>
@@ -38,6 +38,17 @@
                 <p class="grey-text">
                     If you set your project to be <b>Public</b>, other researchers will be able to see your assembly under <a href="#">Public Projects</a>.
                 </p>
+            </div>
+            <div class="col s12">
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>File (FASTA)</span>
+                        <input type="file" id="fasta-upload">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
