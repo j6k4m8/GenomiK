@@ -1,48 +1,44 @@
 package cmd
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-
 // An alignment stores information about the actual string as well
 // as its position.
 type alignment struct {
-	offset int,
-	seq string
+	offset int
+	seq    string
 }
-
 
 // Calculate the "cost" (for insertion into alignment matrices) of two strings
 // @j6k4m8
-func cost(c0 string, c1 string) int {
-    // Using the scores described by Smith et al (1981). This is effectively
+func cost(c0, c1 byte) int {
+	// Using the scores described by Smith et al (1981). This is effectively
 	// changed to { 0, 2 } in the SW implementation because we max against 0.
-    if c0 == c1 {
-        return 2;
-    } else {
-        return -1;
-    }
+	if c0 == c1 {
+		return 2
+	} else {
+		return -1
+	}
 }
 
 // Compute the Smith-Waterman alignment matrix. Not optimized for parallelism
 // because of the dependency of matrix formulation.
 // @j6k4m8
-func SW(p string, t string) int {
+func SW(p string, t string) alignment {
 
-    // Create our matrix, called h by convention.
-    h := [len(p)][len(t)]int{}
+	// Create our matrix, called h by convention.
+	h := make([][]int, len(p))
+	for i := range h {
+		h[i] = make([]int, len(t))
+	}
 	// Populate the matrix:
-    for x := 0; x < len(p); x++ {
-        for y := 0; y < len(t); y++ {
-            if x == 0 || y == 0 {
-                h[x][y] = 0;
-            } else {
-                h[x][y] = max(0, h[x-1][y], h[x][y-1], cost(p[x], t[y]))
-            }
-        }
-    }
+	for x := 0; x < len(p); x++ {
+		for y := 0; y < len(t); y++ {
+			if x == 0 || y == 0 {
+				h[x][y] = 0
+			} else {
+				h[x][y] = max(0, h[x-1][y], h[x][y-1], cost(p[x], t[y]))
+			}
+		}
+	}
 
 	// Compute the best reverse-path of an alignment matrix, starting with the
 	// cell at max(x), max(y).
@@ -56,17 +52,39 @@ func SW(p string, t string) int {
 	for y > 0 {
 		switch min(h[x-1][y], h[x-1][y-1], h[x][y-1]) {
 		case h[x-1][y-1]:
-			path = p[x--] + path
-			y--
+			path = string(p[x]) + path
+			x -= 1
+			y -= 1
 		case h[x][y-1]:
-			y--
+			y -= 1
 			path = "-" + path
 		case h[x-1][y]:
-			path = p[x--] + path
+			path = string(p[x]) + path
+			x -= 1
 		}
 	}
 
 	// Now we store the sequence in path, and we store the offset in the
 	// remaining value of y.
 	return alignment{seq: path, offset: y}
+}
+
+func max(i, j, k, l int) int {
+	if i > j && i > k && i > l {
+		return i
+	} else if j > k && j > l {
+		return j
+	} else if k > l {
+		return k
+	}
+	return l
+}
+
+func min(i, j, k int) int {
+	if i < j && i < k {
+		return i
+	} else if j < k {
+		return j
+	}
+	return k
 }
