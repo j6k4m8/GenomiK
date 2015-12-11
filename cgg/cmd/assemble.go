@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"runtime"
@@ -134,7 +133,6 @@ func computeMatrix(i int, r runner.Runner, unitigs []*fullUnitig) ([][]int, erro
 
 func outputUnitigs(partUnitigs []*unitig, out io.Writer) error {
 	for i, u := range completeUnitigs(partUnitigs) {
-		fmt.Println(i)
 		err := outStr(u.Seq, out)
 		if err != nil {
 			return err
