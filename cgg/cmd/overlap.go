@@ -10,17 +10,25 @@ import (
 	"github.com/j6k4m8/cg/cgg/runner"
 )
 
+// read holds the information for a single read from a FASTA file.
 type read struct {
 	Label string `json:"label"`
 	Seq   string `json:"-"`
 }
 
+// readPair holds a pair of reads along with their computed overlap.
+// This is ready to be marshalled by encoding/json.
 type readPair struct {
 	Left    *read `json:"left"`
 	Right   *read `json:"right"`
 	Overlap int   `json:"overlap"`
 }
 
+// Overlap provides a cmd handler for computing the overlaps (bbr) for a file
+// containing FASTA reads.
+//
+// On success, this will return a *Response object containing all overlap pairs
+// in the form of map of LeftLabel --> *readPair.
 func Overlap(context *cli.Context) *Response {
 	path := context.Args().First()
 	if path == "" {
@@ -33,11 +41,6 @@ func Overlap(context *cli.Context) *Response {
 		return ErrorOccured(err)
 	}
 
-	// pairLabels := make(map[string]string)
-	// for k, v := range pairs {
-	// 	pairLabels[k] = v.Right.Label
-	// }
-
 	return &Response{
 		Ok:      true,
 		Content: pairs,
@@ -45,30 +48,33 @@ func Overlap(context *cli.Context) *Response {
 
 }
 
+// computeOverlap is the internal function that does all the heavy lifting of
+// the Overlap command handler. This is intended to be used when overlaps must
+// be computed as a part of a larger algorithm.
 func computeOverlap(path string) (map[string]readPair, error) {
-
+	// read in fasta file
 	reads, err := parseFasta(path)
 	if err != nil {
 		return nil, err
 	}
 
+	// run concurrently!
 	r := runner.NewMax(
+		// pass an anonymous function so we can use the local reads variable
 		func(i int, r runner.Runner) (interface{}, error) {
-			step := int(len(reads) / r.NumRoutines())
-			start := step * i
-			end := start + step
-			if end > len(reads) {
-				end = len(reads)
-			}
-			return findOverlaps(reads, start, end)
+			return findOverlaps(i, r, reads)
 		},
 	)
 
+	// create a map to "sum" the result of the computations
 	pairs := make(map[string]readPair)
+	// run the overlap functions!
 	r.Run()
+	// wait for and collect the results
 	results, _ := r.Wait()
 
 	for _, r := range results {
+		// cast generic slice back to original type
 		rS := r.([]readPair)
 		for _, rP := range rS {
 			pairs[rP.Left.Label] = rP
@@ -78,6 +84,8 @@ func computeOverlap(path string) (map[string]readPair, error) {
 	return pairs, nil
 }
 
+// parseFasta takes a path string, opens the file, and parses it into the FASTA
+// reads that it contains.
 func parseFasta(path string) ([]read, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -111,7 +119,13 @@ func parseFasta(path string) ([]read, error) {
 	return reads, nil
 }
 
-func findOverlaps(reads []read, start, end int) ([]readPair, error) {
+func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
+	step := int(len(reads) / r.NumRoutines())
+	start := step * i
+	end := start + step
+	if end > len(reads) {
+		end = len(reads)
+	}
 	ret := make([]readPair, 0, end-start)
 	for i := start; i < end; i++ {
 		tR := reads[i]
