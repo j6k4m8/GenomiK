@@ -2,6 +2,13 @@ package cmd
 
 import "github.com/codegangsta/cli"
 
+const (
+	// OutputFlag is the flag for requesting full unitig output.
+	OutputFlag = "o"
+	// PlainTextFlag is the boolean flag for plaintext output.
+	PlainTextFlag = "t"
+)
+
 type unitig struct {
 	Reads []readPair `json:"reads"`
 }
@@ -27,6 +34,7 @@ func Unitig(context *cli.Context) *Response {
 	if path == "" {
 		return ErrorMissingArgument()
 	}
+	outputPath := context.String(OutputFlag)
 
 	unitigs, err := computeUnitigs(path)
 	if err != nil {
@@ -36,6 +44,18 @@ func Unitig(context *cli.Context) *Response {
 	uStart := make(map[string]int)
 	for _, v := range unitigs {
 		uStart[v.Reads[0].Left.Label] = len(v.Reads)
+	}
+
+	if len(outputPath) > 0 {
+		out, err := openWriter(outputPath, context.Bool(PlainTextFlag))
+		if err != nil {
+			return ErrorOccured(err)
+		}
+		defer out.Close()
+		err = outputUnitigs(unitigs, out)
+		if err != nil {
+			return ErrorOccured(err)
+		}
 	}
 
 	return &Response{
@@ -67,7 +87,7 @@ func findMinUnitigs(tMap map[string]readPair, pMap map[string]int) map[string]*u
 }
 
 func traverseUnitigs(unitigs map[string]*unitig) []*unitig {
-	realUnitigs := make([]*unitig, 0)
+	var realUnitigs []*unitig
 	revUni := make(map[string]string)
 	uKeySlice := make([]string, 0, len(unitigs))
 	for k, v := range unitigs {
