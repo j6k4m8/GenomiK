@@ -36,7 +36,8 @@ type Runner interface {
 
 	// Results waits for a call to Run to finish and then returns a copy of
 	// the slice of results. This slice will have length equal to the return of
-	// NumRoutines().
+	// NumRoutines(). The order of the return values is guarenteed to be the
+	// same as the order of the calls made (in order of passed int num).
 	//
 	// Note: The return value is guarenteed to be a copy of the slice
 	// (different backing array) but it is NOT guarneteed that the values
