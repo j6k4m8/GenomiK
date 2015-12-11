@@ -32,6 +32,12 @@ func main() {
 				"be computed.",
 			Action: cmd.Wrap(cmd.Unitig),
 		},
+		{
+			Name: "assemble",
+			Usage: "provide a FASTA file path argument and the genome will be " +
+				"assembled.",
+			Action: cmd.Wrap(cmd.Assemble),
+		},
 	}
 
 	app.Run(os.Args)
