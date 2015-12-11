@@ -62,13 +62,11 @@ func computeOverlap(path string, isGzipped bool) (map[string]readPair, error) {
 		return nil, err
 	}
 
-	prefixMap := makePrefixMap(reads)
-
 	// run concurrently!
 	r := runner.NewMax(
 		// pass an anonymous function so we can use the local reads variable
 		func(i int, r runner.Runner) (interface{}, error) {
-			return findOverlaps(i, r, reads, prefixMap)
+			return findOverlaps(i, r, reads)
 		},
 	)
 
@@ -133,8 +131,7 @@ func parseFasta(path string, isGzipped bool) ([]read, error) {
 	return reads, nil
 }
 
-func findOverlaps(i int, r runner.Runner, reads []read,
-	prefixMap map[string][]*read) ([]readPair, error) {
+func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
 
 	step := int(len(reads) / r.NumRoutines())
 	start := step * i
@@ -218,21 +215,4 @@ func index(str1, str2 string, start int) int {
 		return -1
 	}
 	return pos + start
-}
-
-func makePrefixMap(reads []read) map[string][]*read {
-	prefixMap := make(map[string][]*read)
-	for i := range reads {
-		r := &reads[i]
-		max := len(r.Seq) - 39
-		for j := 0; j < max; j++ {
-			kmer := r.Seq[j : j+40]
-			if arr, exists := prefixMap[kmer]; exists {
-				prefixMap[kmer] = append(arr, r)
-			} else {
-				prefixMap[kmer] = []*read{r}
-			}
-		}
-	}
-	return prefixMap
 }
