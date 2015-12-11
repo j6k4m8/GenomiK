@@ -3,11 +3,15 @@ UI.registerHelper('title', function(title) {
     document.title = title + " | GenomiK";
 });
 
+UI.registerHelper('cal', function(date) {
+    return moment(date).calendar();
+});
+
 
 var image_urls = {
     _img_about_card:    function() { return 'http://jordan.matelsky.com/art/img/Brain01.png' },
     _img_tech_card:     function() { return '/campus.png' },
-    
+
     _img_yeast:     function() { return '/yeast.png' },
 };
 

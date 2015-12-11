@@ -58,4 +58,16 @@ for (var i = 0; i < simpleRoutes.length; i++) {
 
 Router.route('assembly/new', function() {
     this.render('new_assembly')
+}, {
+    name: 'new_assembly'
+});
+
+
+Router.route('assembly/:id', function() {
+    this.render('assembly_page')
+}, {
+    name: 'assembly_page',
+    data: function() {
+        return RawFastas.findOne(this.params.id)
+    }
 });

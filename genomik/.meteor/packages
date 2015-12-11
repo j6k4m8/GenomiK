@@ -24,3 +24,6 @@ underscore
 accounts-password
 useraccounts:materialize
 useraccounts:iron-routing
+momentjs:moment
+cfs:standard-packages
+cfs:filesystem
