@@ -58,11 +58,13 @@ func computeOverlap(path string) (map[string]readPair, error) {
 		return nil, err
 	}
 
+	prefixMap := makePrefixMap(reads)
+
 	// run concurrently!
 	r := runner.NewMax(
 		// pass an anonymous function so we can use the local reads variable
 		func(i int, r runner.Runner) (interface{}, error) {
-			return findOverlaps(i, r, reads)
+			return findOverlaps(i, r, reads, prefixMap)
 		},
 	)
 
@@ -119,7 +121,9 @@ func parseFasta(path string) ([]read, error) {
 	return reads, nil
 }
 
-func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
+func findOverlaps(i int, r runner.Runner, reads []read,
+	prefixMap map[string][]*read) ([]readPair, error) {
+
 	step := int(len(reads) / r.NumRoutines())
 	start := step * i
 	end := start + step
@@ -128,7 +132,7 @@ func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
 	}
 	ret := make([]readPair, 0, end-start)
 	for i := start; i < end; i++ {
-		tR := reads[i]
+		tR := &reads[i]
 		minLen := 40
 		minLenRead := -1
 		for j, pR := range reads {
@@ -145,10 +149,35 @@ func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
 		}
 		if minLenRead != -1 {
 			ret = append(ret, readPair{
-				Left: &tR, Right: &reads[minLenRead], Overlap: minLen,
+				Left: tR, Right: &reads[minLenRead], Overlap: minLen,
 			})
 		}
+		// maxLen := 40
+		// var maxRead *read
+		// matches, exists := prefixMap[tR.Seq[len(tR.Seq)-40:]]
+		// if !exists {
+		// 	continue
+		// }
+		// for j := range matches {
+		// 	pR := &reads[j]
+		// 	if tR.Label == pR.Label {
+		// 		continue
+		// 	}
+		// 	lenO := suffixPrefixMatch(tR.Seq, pR.Seq, maxLen)
+		// 	if lenO > maxLen {
+		// 		maxLen = lenO
+		// 		maxRead = pR
+		// 	} else if lenO == maxLen {
+		// 		maxRead = nil
+		// 	}
+		// }
+		// if maxRead != nil {
+		// 	ret = append(ret, readPair{
+		// 		Left: tR, Right: maxRead, Overlap: maxLen,
+		// 	})
+		// }
 	}
+
 	return ret, nil
 }
 
@@ -177,4 +206,21 @@ func index(str1, str2 string, start int) int {
 		return -1
 	}
 	return pos + start
+}
+
+func makePrefixMap(reads []read) map[string][]*read {
+	prefixMap := make(map[string][]*read)
+	for i := range reads {
+		r := &reads[i]
+		max := len(r.Seq) - 39
+		for j := 0; j < max; j++ {
+			kmer := r.Seq[j : j+40]
+			if arr, exists := prefixMap[kmer]; exists {
+				prefixMap[kmer] = append(arr, r)
+			} else {
+				prefixMap[kmer] = []*read{r}
+			}
+		}
+	}
+	return prefixMap
 }
