@@ -9,19 +9,33 @@ type StringSet struct {
 	lk       *sync.RWMutex
 }
 
-// NewStringSet returns a new string set intended for use in a single
+// NewUnsafeStringSet returns a new string set intended for use in a single
 // goroutine.
-func NewStringSet() *StringSet {
+func NewUnsafeStringSet() *StringSet {
 	return &StringSet{
 		contents: make(map[string]int8),
 	}
 }
 
-// NewSafeStringSet returns a new string set that is guarded against concurrent
+// NewStringSet returns a new string set that is guarded against concurrent
 // use.
-func NewSafeStringSet() *StringSet {
+func NewStringSet() *StringSet {
 	return &StringSet{
 		contents: make(map[string]int8),
+		lk:       &sync.RWMutex{},
+	}
+}
+
+// NewStringSetFromSlice returns a new string set with the all entries in the
+// given slice pre-added to the set. The returned StringSet is safe for
+// concurrent use.
+func NewStringSetFromSlice(source []string) *StringSet {
+	contents := make(map[string]int8)
+	for _, s := range source {
+		contents[s] = 0
+	}
+	return &StringSet{
+		contents: contents,
 		lk:       &sync.RWMutex{},
 	}
 }
@@ -82,4 +96,28 @@ func (s *StringSet) ToSlice() []string {
 		cSlice = append(cSlice, k)
 	}
 	return cSlice
+}
+
+// IsEmpty returns true if the StringSet is empty.
+func (s *StringSet) IsEmpty() bool {
+	if s.IsSafe() {
+		s.lk.RLock()
+		defer s.lk.RUnlock()
+	}
+	return len(s.contents) == 0
+}
+
+// Pop returns an aritrary entry from the StringSet after removing it.
+func (s *StringSet) Pop() string {
+	if s.IsSafe() {
+		s.lk.Lock()
+		defer s.lk.Unlock()
+	}
+	var toRet string
+	for k := range s.contents {
+		toRet = k
+		break
+	}
+	delete(s.contents, toRet)
+	return toRet
 }
