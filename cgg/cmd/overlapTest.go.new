@@ -62,28 +62,57 @@ func computeOverlap(path string, isGzipped bool) (map[string]readPair, error) {
 		return nil, err
 	}
 
-	prefixMap := makePrefixMap(reads)
+	prefixTable := makePrefixTable(reads)
 
 	// run concurrently!
 	r := runner.NewMax(
 		// pass an anonymous function so we can use the local reads variable
 		func(i int, r runner.Runner) (interface{}, error) {
-			return findOverlaps(i, r, reads, prefixMap)
+			return findOverlaps(i, r, reads, prefixTable)
 		},
 	)
 
 	// create a map to "sum" the result of the computations
-	pairs := make(map[string]readPair)
+	tempPairs := make(map[string][]*readPair)
 	// run the overlap functions!
 	r.Run()
 	// wait for and collect the results
 	results, _ := r.Wait()
+	tempPairs = results[0].(map[string][]*readPair)
 
 	for _, r := range results {
 		// cast generic slice back to original type
-		rS := r.([]readPair)
-		for _, rP := range rS {
-			pairs[rP.Left.Label] = rP
+		rS := r.(map[string][]*readPair)
+		for k, v := range rS {
+			if arr, exists := tempPairs[k]; exists {
+				for _, v1 := range v {
+					arr = append(arr, v1)
+				}
+				tempPairs[k] = arr
+			} else {
+				tempPairs[k] = v
+			}
+		}
+	}
+
+	pairs := make(map[string]readPair, len(tempPairs))
+	for k, v := range tempPairs {
+		tied := false
+		maxOverlap := 0
+		var bestMatch *readPair
+		for _, m := range v {
+			if m.Overlap > maxOverlap {
+				maxOverlap = m.Overlap
+				bestMatch = m
+				tied = false
+			} else if m.Overlap == maxOverlap {
+				if bestMatch != nil && bestMatch.Right.Label != m.Right.Label {
+					tied = true
+				}
+			}
+		}
+		if !tied {
+			pairs[k] = *bestMatch
 		}
 	}
 
@@ -134,63 +163,38 @@ func parseFasta(path string, isGzipped bool) ([]read, error) {
 }
 
 func findOverlaps(i int, r runner.Runner, reads []read,
-	prefixMap map[string][]*read) ([]readPair, error) {
+	prefixTable []tableEntry) (map[string][]*readPair, error) {
 
-	step := int(len(reads) / r.NumRoutines())
+	step := int(len(prefixTable) / r.NumRoutines())
 	start := step * i
 	end := start + step
-	if end > len(reads) {
-		end = len(reads)
+	if end > len(prefixTable) {
+		end = len(prefixTable)
 	}
-	ret := make([]readPair, 0, end-start)
+	tempResults := make(map[string][]*readPair)
 	for i := start; i < end; i++ {
-		tR := &reads[i]
-		minLen := 40
-		minLenRead := -1
-		for j, pR := range reads {
-			if i == j {
-				continue
-			}
-			lenOverlap := suffixPrefixMatch(tR.Seq, pR.Seq, minLen)
-			if lenOverlap > minLen {
-				minLen = lenOverlap
-				minLenRead = j
-			} else if lenOverlap == minLen {
-				minLenRead = -1
+		x := &prefixTable[i]
+		for i, y := range x.labels {
+			for j, z := range x.labels {
+				if i == j {
+					continue
+				}
+				overlap := suffixPrefixMatch(y.Seq, z.Seq, 40)
+				if overlap > 0 {
+					pair := &readPair{
+						Left: y, Right: z, Overlap: overlap,
+					}
+					if arr, exists := tempResults[y.Label]; exists {
+						tempResults[y.Label] = append(arr, pair)
+					} else {
+						tempResults[y.Label] = []*readPair{pair}
+					}
+				}
 			}
 		}
-		if minLenRead != -1 {
-			ret = append(ret, readPair{
-				Left: tR, Right: &reads[minLenRead], Overlap: minLen,
-			})
-		}
-		// maxLen := 40
-		// var maxRead *read
-		// matches, exists := prefixMap[tR.Seq[len(tR.Seq)-40:]]
-		// if !exists {
-		// 	continue
-		// }
-		// for j := range matches {
-		// 	pR := &reads[j]
-		// 	if tR.Label == pR.Label {
-		// 		continue
-		// 	}
-		// 	lenO := suffixPrefixMatch(tR.Seq, pR.Seq, maxLen)
-		// 	if lenO > maxLen {
-		// 		maxLen = lenO
-		// 		maxRead = pR
-		// 	} else if lenO == maxLen {
-		// 		maxRead = nil
-		// 	}
-		// }
-		// if maxRead != nil {
-		// 	ret = append(ret, readPair{
-		// 		Left: tR, Right: maxRead, Overlap: maxLen,
-		// 	})
-		// }
 	}
 
-	return ret, nil
+	return tempResults, nil
 }
 
 func suffixPrefixMatch(str1, str2 string, minOverlap int) int {
@@ -220,7 +224,12 @@ func index(str1, str2 string, start int) int {
 	return pos + start
 }
 
-func makePrefixMap(reads []read) map[string][]*read {
+type tableEntry struct {
+	Seq    string
+	labels []*read
+}
+
+func makePrefixTable(reads []read) []tableEntry {
 	prefixMap := make(map[string][]*read)
 	for i := range reads {
 		r := &reads[i]
@@ -234,5 +243,9 @@ func makePrefixMap(reads []read) map[string][]*read {
 			}
 		}
 	}
-	return prefixMap
+	prefixTable := make([]tableEntry, 0, len(prefixMap))
+	for k, v := range prefixMap {
+		prefixTable = append(prefixTable, tableEntry{k, v})
+	}
+	return prefixTable
 }

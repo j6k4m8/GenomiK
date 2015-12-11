@@ -36,7 +36,7 @@ func Unitig(context *cli.Context) *Response {
 	}
 	outputPath := context.String(OutputFlag)
 
-	unitigs, err := computeUnitigs(path)
+	unitigs, err := computeUnitigs(path, context.Bool(GZipFlag))
 	if err != nil {
 		return ErrorOccured(err)
 	}
@@ -64,8 +64,8 @@ func Unitig(context *cli.Context) *Response {
 	}
 }
 
-func computeUnitigs(path string) ([]*unitig, error) {
-	tMap, err := computeOverlap(path)
+func computeUnitigs(path string, isGzipped bool) ([]*unitig, error) {
+	tMap, err := computeOverlap(path, isGzipped)
 	if err != nil {
 		return nil, err
 	}

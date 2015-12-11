@@ -12,12 +12,19 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "genomik-cli"
 
+	gzFlag := cli.BoolFlag{
+		Name: cmd.GZipFlag,
+		Usage: "set this flag to indicated that the input FASTA file is " +
+			"gzipped.",
+	}
+
 	app.Commands = []cli.Command{
 		{
 			Name:    "hello",
 			Aliases: []string{"hi"},
 			Usage:   "say hi for sanity",
 			Action:  cmd.Wrap(cmd.Hello),
+			Flags:   []cli.Flag{gzFlag},
 		},
 		{
 			Name:    "overlap",
@@ -25,6 +32,7 @@ func main() {
 			Usage: "provide a FASTA file path argument and the overlaps " +
 				"will be computed.",
 			Action: cmd.Wrap(cmd.Overlap),
+			Flags:  []cli.Flag{gzFlag},
 		},
 		{
 			Name: "unitig",
@@ -42,6 +50,7 @@ func main() {
 					Name:  cmd.PlainTextFlag,
 					Usage: "optional - set to output plaintext rather than gzip.",
 				},
+				gzFlag,
 			},
 		},
 		{
@@ -49,6 +58,7 @@ func main() {
 			Usage: "provide a FASTA file path argument and the genome will " +
 				"be assembled.",
 			Action: cmd.Wrap(cmd.Assemble),
+			Flags:  []cli.Flag{gzFlag},
 		},
 	}
 

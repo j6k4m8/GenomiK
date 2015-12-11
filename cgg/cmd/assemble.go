@@ -47,7 +47,7 @@ func Assemble(context *cli.Context) *Response {
 		return ErrorMissingArgument()
 	}
 
-	partUnitigs, err := computeUnitigs(path)
+	partUnitigs, err := computeUnitigs(path, context.Bool(GZipFlag))
 	if err != nil {
 		return ErrorOccured(err)
 	}
