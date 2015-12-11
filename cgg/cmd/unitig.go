@@ -34,8 +34,8 @@ func Unitig(context *cli.Context) *Response {
 	}
 
 	uStart := make(map[string]int)
-	for k, v := range unitigs {
-		uStart[k] = len(v.Reads)
+	for _, v := range unitigs {
+		uStart[v.Reads[0].Left.Label] = len(v.Reads)
 	}
 
 	return &Response{
@@ -44,7 +44,7 @@ func Unitig(context *cli.Context) *Response {
 	}
 }
 
-func computeUnitigs(path string) (map[string]*unitig, error) {
+func computeUnitigs(path string) ([]*unitig, error) {
 	tMap, err := computeOverlap(path)
 	if err != nil {
 		return nil, err
@@ -66,8 +66,8 @@ func findMinUnitigs(tMap map[string]readPair, pMap map[string]int) map[string]*u
 	return unitigs
 }
 
-func traverseUnitigs(unitigs map[string]*unitig) map[string]*unitig {
-	realUnitigs := make(map[string]*unitig)
+func traverseUnitigs(unitigs map[string]*unitig) []*unitig {
+	realUnitigs := make([]*unitig, 0)
 	revUni := make(map[string]string)
 	uKeySlice := make([]string, 0, len(unitigs))
 	for k, v := range unitigs {
@@ -89,7 +89,7 @@ func traverseUnitigs(unitigs map[string]*unitig) map[string]*unitig {
 		}
 
 		u := newUnitig(unitigs[start].Reads[0])
-		realUnitigs[start] = u
+		realUnitigs = append(realUnitigs, u)
 
 		curr := start
 		for {

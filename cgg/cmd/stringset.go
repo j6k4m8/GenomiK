@@ -1,8 +1,9 @@
 package cmd
 
-// StringSet provides a quick implementation of a Set for strings.
 import "sync"
 
+// StringSet provides a quick implementation of a Set for strings.
+//
 // This may or may not be concurrent safe depending on how it is created.
 type StringSet struct {
 	contents map[string]int8
