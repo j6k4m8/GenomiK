@@ -33,7 +33,7 @@ func Unitig(context *cli.Context) *Response {
 		return ErrorOccured(err)
 	}
 
-	uStart := make(map[string]int, 0)
+	uStart := make(map[string]int)
 	for k, v := range unitigs {
 		uStart[k] = len(v.Reads)
 	}
@@ -50,101 +50,73 @@ func computeUnitigs(path string) (map[string]*unitig, error) {
 		return nil, err
 	}
 
-	tLabels := make([]string, len(tMap))
-	for k := range tMap {
-		tLabels = append(tLabels, k)
-	}
-
 	pMap := parseOverlaps(tMap)
 
-	unitigs := findUnitigs(tMap, pMap)
+	unitigs := traverseUnitigs(findMinUnitigs(tMap, pMap))
 	return unitigs, nil
 }
 
-func findUnitigs(tMap map[string]readPair, pMap map[string]int) map[string]*unitig {
-	uMap := make(map[string]*unitig)
-	used := NewStringSet()
+func findMinUnitigs(tMap map[string]readPair, pMap map[string]int) map[string]*unitig {
+	unitigs := make(map[string]*unitig)
 	for tLabel, pair := range tMap {
-		if !used.AddContains(tLabel) {
-			continue
+		if pair.Overlap == pMap[pair.Right.Label] {
+			unitigs[tLabel] = newUnitig(pair)
 		}
-		pLabel := pair.Right.Label
-		if pMap[pLabel] != pair.Overlap {
-			continue
-		}
-		currU := newUnitig(pair)
-		uMap[tLabel] = currU
-		if uP, exists := uMap[pLabel]; exists {
-			currU.addUnitig(uP)
-			delete(uMap, pLabel)
-			continue
-		}
+	}
+	return unitigs
+}
+
+func traverseUnitigs(unitigs map[string]*unitig) map[string]*unitig {
+	realUnitigs := make(map[string]*unitig)
+	revUni := make(map[string]string)
+	uKeySlice := make([]string, 0, len(unitigs))
+	for k, v := range unitigs {
+		revUni[v.Reads[0].Right.Label] = k
+		uKeySlice = append(uKeySlice, v.Reads[0].Left.Label)
+	}
+	uKeys := NewStringSetFromSlice(uKeySlice)
+	uKeySlice = nil
+	for !uKeys.IsEmpty() {
+		start := uKeys.Pop()
+		// traverse until we find the true start of the full unitig
 		for {
-			tLabelNew := pLabel
-			used.Add(tLabelNew)
-			pairNew, exists := tMap[tLabelNew]
+			newStart, exists := revUni[start]
 			if !exists {
 				break
 			}
-			pLabel = pairNew.Right.Label
-			if pMap[pLabel] != pairNew.Overlap {
+			start = newStart
+			uKeys.Remove(start)
+		}
+
+		u := newUnitig(unitigs[start].Reads[0])
+		realUnitigs[start] = u
+
+		curr := start
+		for {
+			uKeys.Remove(curr)
+			oldUni, exists := unitigs[curr]
+			if !exists {
 				break
 			}
-			currU.add(pairNew)
-			if u, exists := uMap[pLabel]; exists {
-				currU.addUnitig(u)
-				delete(uMap, pLabel)
-				break
-			}
+			u.addUnitig(oldUni)
+			curr = oldUni.Reads[0].Right.Label
 		}
 	}
-
-	return uMap
+	return realUnitigs
 }
-
-// def find_unitigs(tMap, pMap):
-//     unitigs = dict()
-//     used = set()
-//     for t in tMap.keys():
-//         if t in used:
-//             continue
-//         used.add(t)
-//         p_pair = tMap[t]
-//         if pMap[p_pair.label] != p_pair.l:
-//             continue
-//         unitigs[t] = [p_pair]
-//         if p_pair.label in unitigs:
-//             unitigs[t].extend(unitigs[p_pair.label])
-//             del unitigs[p_pair.label]
-//             continue
-
-//         while True:
-//             t_new = p_pair.label
-//             used.add(t_new)
-//             if t_new not in tMap:
-//                 break
-//             p_pair = tMap[t_new]
-//             if pMap[p_pair.label] != p_pair.l:
-//                 break
-//             unitigs[t].append(p_pair)
-//             if p_pair.label in unitigs:
-//                 unitigs[t].extend(unitigs[p_pair.label])
-//                 del unitigs[p_pair.label]
-//                 break
-//     return unitigs
 
 func parseOverlaps(tMap map[string]readPair) map[string]int {
 	pMap := make(map[string]int)
 
 	for _, pair := range tMap {
 		pLabel := pair.Right.Label
-		if _, exists := pMap[pLabel]; !exists {
+		if oldVal, exists := pMap[pLabel]; !exists {
 			pMap[pLabel] = pair.Overlap
-		} else if abs(pMap[pLabel]) == pair.Overlap {
-			if pMap[pLabel] > 0 {
+		} else if abs(oldVal) == pair.Overlap {
+			if oldVal > 0 {
 				pMap[pLabel] *= -1
 			}
-		} else if abs(pMap[pLabel]) < pair.Overlap {
+		} else if abs(oldVal) < pair.Overlap {
 			pMap[pLabel] = pair.Overlap
 		}
 	}
