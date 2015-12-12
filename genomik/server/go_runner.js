@@ -26,13 +26,13 @@ Meteor.methods({
             gzflag = "--gz";
         }
 
-        runCommand(EXE, [
+        Exec.run(EXE, [
             'unitig',
             '-o',
             fileout,
             // gzflag,
             '-p',
-            "~/gk/uploads/raw_fastas/" + filename,
-        ], console.log);
+            "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
+        ], console.log, stderr);
     }
 });
