@@ -40,7 +40,8 @@
                 <ul>
                     <li><strong>Date:</strong> {{ cal uploadedAt }}</li>
                     <li><strong>Author:</strong> {{ ownerName }}</li>
-                    <li><strong>Assembly:</strong> <a href="#">FASTA</a></li>
+                    <li><strong>Raw:</strong> <a href="{{ url }}">FASTA</a></li>
+                    <li><strong>Assembly:</strong> <a href="/assemblies/{{ copies.raw_fastas.key }}">FASTA</a></li>
                     <li>{{> FS.DeleteButton class="red btn"}}</li>
                 </ul>
             </p>

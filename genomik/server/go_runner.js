@@ -5,34 +5,26 @@ stderr = function(args) {
 };
 
 
-runCommand = function(cmd, args, stdout) {
-    /*
-    Run the actual command.
-
-    Arguments:
-        cmd (str): The command to run
-        args (str[]): Arguments
-    */
-
-    // Should do sanitation here first
-    Exec.run(cmd, args, stdout, stderr);
-};
-
-
 Meteor.methods({
     '_callGo': function(filename, fileout) {
         var gzflag = "";
         if (filename.endsWith('.gz') || filename.endsWith('.gzip')) {
             gzflag = "--gz";
+            Exec.run(EXE, [
+                'unitig',
+                "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
+                '-o',
+                gzflag,
+                fileout,
+            ], console.log, stderr);
+        } else {
+            Exec.run(EXE, [
+                'unitig',
+                '"' + "/home/ubuntu/gk/uploads/raw_fastas/" + filename + '"',
+                '-o',
+                '"' + fileout + '"',
+            ], console.log, stderr);
         }
 
-        Exec.run(EXE, [
-            'unitig',
-            '-o',
-            fileout,
-            // gzflag,
-            '-p',
-            "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
-        ], console.log, stderr);
     }
 });

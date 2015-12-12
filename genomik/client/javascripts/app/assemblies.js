@@ -10,5 +10,5 @@ Template.assembly_card.helpers({
     ownerName: function() {
         var o = Meteor.users.findOne(this.owner);
         return o.profile.first_name + " " + o.profile.last_name;
-    }
+    },
 });
