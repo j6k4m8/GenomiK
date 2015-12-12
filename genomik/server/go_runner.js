@@ -13,8 +13,8 @@ Meteor.methods({
             Exec.run(EXE, [
                 'unitig',
                 "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
-                '-o',
                 gzflag,
+                '-o',
                 fileout,
             ], console.log, stderr);
         } else {
