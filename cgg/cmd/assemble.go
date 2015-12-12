@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/codegangsta/cli"
 	"github.com/j6k4m8/cg/cgg/runner"
@@ -132,10 +133,16 @@ func computeMatrix(i int, r runner.Runner, unitigs []*fullUnitig) ([][]int, erro
 }
 
 func outputUnitigs(partUnitigs []*unitig, out io.Writer) error {
-	for i, u := range completeUnitigs(partUnitigs) {
-		err := outStr(u.Seq, out)
+	for i := range partUnitigs {
+		u := partUnitigs[i]
+		err := outStr(u.Reads[0].Left.Seq, out)
 		if err != nil {
 			return err
+		}
+		for _, r := range u.Reads {
+			if err := outStr(r.Right.Seq[r.Overlap:], out); err != nil {
+				return err
+			}
 		}
 		if i != len(partUnitigs)-1 {
 			err = outStr(SEP, out)
@@ -199,6 +206,9 @@ func (n *NopWriteCloser) Close() error {
 }
 
 func openWriter(path string, plaintext bool) (io.WriteCloser, error) {
+	if !strings.HasSuffix(path, ".gz") {
+		path += ".gz"
+	}
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err
