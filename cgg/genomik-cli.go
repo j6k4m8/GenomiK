@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/j6k4m8/cg/cgg/cmd"
@@ -10,7 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println(os.Args)
 	app := cli.NewApp()
 	app.Name = "genomik-cli"
 
