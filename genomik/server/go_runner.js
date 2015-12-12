@@ -30,7 +30,7 @@ Meteor.methods({
             'unitig',
             '-o',
             fileout,
-            gzflag,
+            // gzflag,
             '-p',
             "~/gk/uploads/raw_fastas/" + filename,
         ], console.log);
