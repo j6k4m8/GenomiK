@@ -53,10 +53,6 @@ func main() {
 					Usage: "optional - set to output plaintext rather than gzip.",
 				},
 				gzFlag,
-				cli.StringFlag{
-					Name:  "p",
-					Value: "",
-				},
 			},
 		},
 		{
