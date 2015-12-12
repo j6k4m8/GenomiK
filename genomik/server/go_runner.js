@@ -28,7 +28,7 @@ Meteor.methods({
 
         runCommand(EXE, [
             'unitig',
-            filename,
+            "~/gk/uploads/raw_fastas/" + filename,
             '-o',
             fileout,
             gzflag
