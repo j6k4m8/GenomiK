@@ -26,6 +26,8 @@ go get github.com/j6k4m8/cg/cgg
 ```
 This will clone our repo into `$GOPATH/src/github.com/j6k4m8/cg`.
 
+If you would like to manually place this files (if, for example, you want to test our submission rather than the live github verison...) then make sure that you manually copy the files into the correct path so that `go` can find the correct import paths.
+
 # Compiling `genomik-cli`
 While in `$GOPATH/src/github.com/j6k4m8/cg/cgg`, run:
 ```
