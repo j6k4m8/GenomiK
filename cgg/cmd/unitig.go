@@ -30,7 +30,7 @@ func newUnitig(p readPair) *unitig {
 }
 
 func Unitig(context *cli.Context) *Response {
-	path := context.Args().First()
+	path := context.String("p")
 	if path == "" {
 		return ErrorMissingArgument()
 	}
