@@ -4,24 +4,24 @@
 '''
 
 import random as rand
-import sys
+import sys, gzip
 
 ''' Function by Ben Langmead '''
 def readGenome(filename):
     genome = ''
-    with open(filename, 'r') as f:
+    with gzip.open(filename, 'rt') as f:
         for line in f:
             # ignore header line with genome information
             if not line[0] == '>':
                 genome += line.rstrip()
     return genome
-genome = readGenome('lambda_virus.fa')
+genome = readGenome(sys.argv[1])
 
 nt_map = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'T'}
 
 
 ''' Pull in the file (hardcoded for now) '''
-output = readGenome(sys.argv[1])
+output = readGenome(sys.argv[2])
 
 unitigs = output.split(',')
 
@@ -277,7 +277,7 @@ def write_solution(genome, per_line=60, out=sys.stdout):
 assembled = [[] for x in range(len(genome))]
 apprx = []
 for x in range(len(unitigs)):
-  temp = approximate_match(unitigs[x], genome, 10)
+  temp = approximate_match(unitigs[x], genome, 50)
   apprx.append(temp)
 
 for x in range(len(apprx)):
