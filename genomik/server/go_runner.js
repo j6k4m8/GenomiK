@@ -20,7 +20,7 @@ Meteor.methods({
         } else {
             Exec.run(EXE, [
                 'unitig',
-                '"' + "/home/ubuntu/gk/uploads/raw_fastas/" + filename + '"',
+                "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
                 '-o',
                 '"' + fileout + '"',
             ], console.log, stderr);
