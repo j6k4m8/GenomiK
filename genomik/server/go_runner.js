@@ -19,17 +19,19 @@ runCommand = function(cmd, args, stdout) {
 };
 
 
-_callGo = function(filename, fileout) {
-    var gzflag = "";
-    if (filename.endsWith('.gz') || filename.endsWith('.gzip')) {
-        gzflag = "--gz";
-    }
+Meteor.methods({
+    '_callGo': function(filename, fileout) {
+        var gzflag = "";
+        if (filename.endsWith('.gz') || filename.endsWith('.gzip')) {
+            gzflag = "--gz";
+        }
 
-    runCommand(EXE, [
-        'unitig',
-        filename,
-        '-o',
-        fileout,
-        gzflag
-    ]);
-}
+        runCommand(EXE, [
+            'unitig',
+            filename,
+            '-o',
+            fileout,
+            gzflag
+        ], console.log);
+    }
+});
