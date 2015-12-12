@@ -139,7 +139,7 @@ func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
 	if end > len(reads) {
 		end = len(reads)
 	}
-	ret := make([]readPair, 0, end-start)
+	var ret []readPair
 	for i := start; i < end; i++ {
 		tR := &reads[i]
 		minLen := 40
@@ -191,7 +191,7 @@ func findOverlaps(i int, r runner.Runner, reads []read) ([]readPair, error) {
 }
 
 func suffixPrefixMatch(str1, str2 string, minOverlap int) int {
-	if len(str1) < minOverlap {
+	if len(str1) < minOverlap || len(str2) < minOverlap {
 		return 0
 	}
 	str2Prefix := str2[:minOverlap]
