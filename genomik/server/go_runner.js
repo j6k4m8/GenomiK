@@ -5,20 +5,6 @@ stderr = function(args) {
 };
 
 
-runCommand = function(cmd, args, stdout) {
-    /*
-    Run the actual command.
-
-    Arguments:
-        cmd (str): The command to run
-        args (str[]): Arguments
-    */
-
-    // Should do sanitation here first
-    Exec.run(cmd, args, stdout, stderr);
-};
-
-
 Meteor.methods({
     '_callGo': function(filename, fileout) {
         var gzflag = "";
@@ -30,9 +16,8 @@ Meteor.methods({
             'unitig',
             '-o',
             fileout,
-            // gzflag,
-            '-p',
             "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
+            gzflag,
         ], console.log, stderr);
     }
 });
