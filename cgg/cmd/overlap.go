@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/j6k4m8/cg/cgg/runner"
@@ -92,6 +94,10 @@ func openFile(path string) *os.File {
 	var file *os.File
 	for file == nil {
 		file, _ = os.Open(path)
+		if file == nil {
+			time.Sleep(time.Second * 2)
+			fmt.Println("failed")
+		}
 	}
 	return file
 }
