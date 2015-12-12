@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"compress/gzip"
-	"fmt"
 	"io"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/j6k4m8/cg/cgg/runner"
@@ -90,26 +88,13 @@ func computeOverlap(path string, isGzipped bool) (map[string]readPair, error) {
 	return pairs, nil
 }
 
-func openFile(path string) *os.File {
-	var file *os.File
-	for file == nil {
-		file, _ = os.Open(path)
-		if file == nil {
-			time.Sleep(time.Second * 2)
-			fmt.Println("failed")
-		}
-	}
-	return file
-}
-
 // parseFasta takes a path string, opens the file, and parses it into the FASTA
 // reads that it contains.
 func parseFasta(path string, isGzipped bool) ([]read, error) {
-	file := openFile(path)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	var err error
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
 	defer file.Close()
 	var unbufReader io.ReadCloser = file
 	if isGzipped {
