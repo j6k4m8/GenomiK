@@ -41,9 +41,10 @@
                     <li><strong>Date:</strong> {{ cal uploadedAt }}</li>
                     <li><strong>Author:</strong> {{ ownerName }}</li>
                     <li><strong>Raw:</strong> <a href="{{ url }}">FASTA</a></li>
-                    <li><strong>Assembly:</strong> <a href="/assemblies/{{ copies.raw_fastas.key }}">FASTA</a></li>
-                    <li>{{> FS.DeleteButton class="red btn"}}</li>
+                    <li><strong>Unitigs (CSV):</strong> <a href="/assemblies/{{ copies.raw_fastas.key }}.gz">FASTA</a></li>
+                    <li></li>
                 </ul>
+                {{> FS.DeleteButton class="red btn"}}
             </p>
         </div>
     </div>

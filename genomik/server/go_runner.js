@@ -22,7 +22,7 @@ Meteor.methods({
                 'unitig',
                 "/home/ubuntu/gk/uploads/raw_fastas/" + filename,
                 '-o',
-                fileout,
+                fileout + ".gz",
             ], console.log, stderr);
         }
 
