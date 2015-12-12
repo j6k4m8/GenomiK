@@ -31,7 +31,8 @@ Meteor.methods({
             '-o',
             fileout,
             gzflag,
-            '"' + "~/gk/uploads/raw_fastas/" + filename + '"'
+            '-p',
+            "~/gk/uploads/raw_fastas/" + filename,
         ], console.log);
     }
 });
