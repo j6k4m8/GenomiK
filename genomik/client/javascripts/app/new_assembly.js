@@ -11,16 +11,6 @@ Template.new_assembly.events({
             } else {
                 Router.go('home');
                 Materialize.toast('New upload started: ' + fileObj.jobName, 5000);
-                a = fileObj;
-                Meteor.setTimeout(function() {
-                    Meteor.call('_callGo', a.getFileRecord().copies.raw_fastas.key, "~/gk/out", function(err, val) {
-                        if (!!err) {
-                            Materialize.toast(err, 5000);
-                        } else {
-                            Materialize.toast("Unitigs computed for " + fileObj.jobName);
-                        }
-                    });
-                }, 1000);
             }
         });
     }
