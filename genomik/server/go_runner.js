@@ -28,10 +28,10 @@ Meteor.methods({
 
         runCommand(EXE, [
             'unitig',
-            "~/gk/uploads/raw_fastas/" + filename,
             '-o',
             fileout,
-            gzflag
+            gzflag,
+            "~/gk/uploads/raw_fastas/" + filename
         ], console.log);
     }
 });
