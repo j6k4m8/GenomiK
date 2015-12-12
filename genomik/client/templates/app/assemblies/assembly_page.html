@@ -7,9 +7,11 @@
     </div>
     <div class="row">
         <div class="col s6">
+            {{#unless isUploaded}}
             <div class="progress">
                 <div class="indeterminate"></div>
             </div>
+            {{/unless}}
             {{> assembly_card }}
         </div>
         <div class="col s6">

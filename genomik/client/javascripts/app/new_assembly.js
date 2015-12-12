@@ -7,12 +7,14 @@ Template.new_assembly.events({
 
         RawFastas.insert(fastaFile, function(err, fileObj) {
             if (err) {
-                Materialize.toast('Invalid FASTA extension (.fa, .fasta).', 5000);
+                Materialize.toast('Invalid FASTA.', 5000);
             } else {
                 if (Meteor.isClient) {
                     Router.go('home');
                     Materialize.toast('New upload started: ' + fileObj.jobName, 5000);
-                };
+                } else if (Meteor.isServer) {
+                    _callGo(fileObj.copies.raw_fastas.key, "~/gk/out")
+                }
             }
         });
     }
