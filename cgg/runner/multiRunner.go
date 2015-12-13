@@ -29,6 +29,7 @@ func NewMulti(f Func, numRoutines int) Runner {
 	if numRoutines <= 0 {
 		numRoutines = runtime.GOMAXPROCS(-1)
 	}
+	runtime.GOMAXPROCS(numRoutines)
 	wg := &sync.WaitGroup{}
 	wg.Add(numRoutines)
 	mR := &multiRunner{
