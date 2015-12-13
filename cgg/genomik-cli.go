@@ -32,7 +32,13 @@ func main() {
 			Usage: "provide a FASTA file path argument and the overlaps " +
 				"will be computed.",
 			Action: cmd.Wrap(cmd.Overlap),
-			Flags:  []cli.Flag{gzFlag},
+			Flags: []cli.Flag{
+				gzFlag,
+				cli.IntFlag{
+					Name:  "p",
+					Usage: "optional - number of goroutines to run",
+				},
+			},
 		},
 		{
 			Name: "unitig",

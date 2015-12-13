@@ -39,7 +39,7 @@ func Overlap(context *cli.Context) *Response {
 		return ErrorMissingArgument()
 	}
 
-	pairs, err := computeOverlap(path, context.Bool(GZipFlag))
+	pairs, err := computeOverlap(path, context.Bool(GZipFlag), context)
 
 	if err != nil {
 		return ErrorOccured(err)
@@ -55,7 +55,7 @@ func Overlap(context *cli.Context) *Response {
 // computeOverlap is the internal function that does all the heavy lifting of
 // the Overlap command handler. This is intended to be used when overlaps must
 // be computed as a part of a larger algorithm.
-func computeOverlap(path string, isGzipped bool) (map[string]readPair, error) {
+func computeOverlap(path string, isGzipped bool, context *cli.Context) (map[string]readPair, error) {
 	// read in fasta file
 	reads, err := parseFasta(path, isGzipped)
 	if err != nil {
@@ -63,11 +63,11 @@ func computeOverlap(path string, isGzipped bool) (map[string]readPair, error) {
 	}
 
 	// run concurrently!
-	r := runner.NewMax(
+	r := runner.New(
 		// pass an anonymous function so we can use the local reads variable
 		func(i int, r runner.Runner) (interface{}, error) {
 			return findOverlaps(i, r, reads)
-		},
+		}, context.Int("p"),
 	)
 
 	// create a map to "sum" the result of the computations
