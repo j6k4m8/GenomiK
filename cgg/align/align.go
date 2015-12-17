@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
+
 
 // An alignment stores information about the actual string as well
 // as its position.
@@ -14,6 +16,7 @@ type alignment struct {
 type ConcurrentSmithWaterman struct {
 	p, t string
 	h [][]int
+	wg sync.WaitGroup
 }
 
 func NewCSW(p string, t string) ConcurrentSmithWaterman {
@@ -21,10 +24,12 @@ func NewCSW(p string, t string) ConcurrentSmithWaterman {
 	for i := range h {
 		h[i] = make([]int, len(t))
 	}
+	var wg sync.WaitGroup
 	return ConcurrentSmithWaterman{
 		p: p,
 		t: t,
 		h: h,
+		wg: wg,
 	}
 }
 
@@ -33,6 +38,7 @@ func (csw ConcurrentSmithWaterman) Get(i int, j int) int {
 }
 
 func (csw ConcurrentSmithWaterman) ConcurrentPopulate(i int, j int) {
+	fmt.Println(csw.wg)
 	if i == 0 || j == 0 {
 		csw.h[i][j] = 0
 	} else {
@@ -42,15 +48,22 @@ func (csw ConcurrentSmithWaterman) ConcurrentPopulate(i int, j int) {
 	fmt.Println(i, j)
 
 	if i+1 < len(csw.p) {
+		csw.wg.Add(1)
 		go csw.ConcurrentPopulate(i+1, j)
 	}
 	if j+1 < len(csw.t) {
+		csw.wg.Add(1)
 		go csw.ConcurrentPopulate(i, j+1)
 	}
+
+	defer csw.wg.Done()
 }
 
 func (csw ConcurrentSmithWaterman) Populate() {
+	csw.wg.Add(1)
 	go csw.ConcurrentPopulate(0, 0)
+
+	csw.wg.Wait()
 }
 
 
@@ -137,7 +150,7 @@ func min(i, j, k int) int {
 }
 
 func main() {
-	csw := NewCSW("AAAA", "AAAA")
+	csw := NewCSW("AA", "AA")
 	csw.Populate()
 	fmt.Println(csw.Get(3, 3))
 }
