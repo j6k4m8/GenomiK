@@ -1,4 +1,8 @@
-package cmd
+package main
+
+import (
+	"fmt"
+)
 
 // An alignment stores information about the actual string as well
 // as its position.
@@ -6,6 +10,49 @@ type alignment struct {
 	offset int
 	seq    string
 }
+
+type ConcurrentSmithWaterman struct {
+	p, t string
+	h [][]int
+}
+
+func NewCSW(p string, t string) ConcurrentSmithWaterman {
+	h := make([][]int, len(p))
+	for i := range h {
+		h[i] = make([]int, len(t))
+	}
+	return ConcurrentSmithWaterman{
+		p: p,
+		t: t,
+		h: h,
+	}
+}
+
+func (csw ConcurrentSmithWaterman) Get(i int, j int) int {
+	return csw.h[i][j]
+}
+
+func (csw ConcurrentSmithWaterman) ConcurrentPopulate(i int, j int) {
+	if i == 0 || j == 0 {
+		csw.h[i][j] = 0
+	} else {
+		csw.h[i][j] = 1 + max(0, csw.h[i-1][j], csw.h[i][j-1], cost(csw.p[i], csw.t[j]))
+	}
+
+	fmt.Println(i, j)
+
+	if i+1 < len(csw.p) {
+		go csw.ConcurrentPopulate(i+1, j)
+	}
+	if j+1 < len(csw.t) {
+		go csw.ConcurrentPopulate(i, j+1)
+	}
+}
+
+func (csw ConcurrentSmithWaterman) Populate() {
+	go csw.ConcurrentPopulate(0, 0)
+}
+
 
 // Calculate the "cost" (for insertion into alignment matrices) of two strings
 // @j6k4m8
@@ -17,32 +64,6 @@ func cost(c0, c1 byte) int {
 	} else {
 		return -1
 	}
-}
-
-func ConcurrentSW(p string, t string) {
-
-	h := make([][]int, len(p))
-	for i := range h {
-		h[i] = make([]int, len(t))
-	}
-
-	populate := func(i int, j int) {
-		if i == 0 || j == 0 {
-			h[i][j] = 0
-		} else {
-			h[i][j] = max(0, h[i-1][j], h[i][j-1], cost(p[i], t[j]))
-		}
-
-		if i+1 < len(p) {
-			go populate(i+1, j)
-		}
-		if j+1 < len(t) {
-			go populate(i, j+1)
-		}
-	}
-
-	go populate(0, 0)
-	fmt.Println(h[5][5])
 }
 
 // Compute the Smith-Waterman alignment matrix. Not optimized for parallelism
@@ -61,7 +82,7 @@ func SW(p string, t string) alignment {
 			if x == 0 || y == 0 {
 				h[x][y] = 0
 			} else {
-				h[x][y] = max(0, h[x-1][y], h[x][y-1], cost(p[x], t[y]))
+				h[x][y] = 1 + max(0, h[x-1][y], h[x][y-1], cost(p[x], t[y]))
 			}
 		}
 	}
@@ -113,4 +134,10 @@ func min(i, j, k int) int {
 		return j
 	}
 	return k
+}
+
+func main() {
+	csw := NewCSW("AAAA", "AAAA")
+	csw.Populate()
+	fmt.Println(csw.Get(3, 3))
 }
