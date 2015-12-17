@@ -19,8 +19,6 @@ func cost(c0, c1 byte) int {
 	}
 }
 
-
-
 func ConcurrentSW(p string, t string) {
 
 	h := make([][]int, len(p))
@@ -28,21 +26,24 @@ func ConcurrentSW(p string, t string) {
 		h[i] = make([]int, len(t))
 	}
 
-	populate := func (i int, j int)  {
+	populate := func(i int, j int) {
 		if i == 0 || j == 0 {
-			h[i][j] = 0;
+			h[i][j] = 0
 		} else {
 			h[i][j] = max(0, h[i-1][j], h[i][j-1], cost(p[i], t[j]))
 		}
 
-		if i + 1 < len(p) { go populate(i + 1, j) }
-		if j + 1 < len(t) { go populate(i, j + 1) }
+		if i+1 < len(p) {
+			go populate(i+1, j)
+		}
+		if j+1 < len(t) {
+			go populate(i, j+1)
+		}
 	}
 
 	go populate(0, 0)
 	fmt.Println(h[5][5])
 }
-
 
 // Compute the Smith-Waterman alignment matrix. Not optimized for parallelism
 // because of the dependency of matrix formulation.
