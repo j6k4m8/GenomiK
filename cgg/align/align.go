@@ -5,7 +5,6 @@ import (
 	"sync"
 )
 
-
 // An alignment stores information about the actual string as well
 // as its position.
 type alignment struct {
@@ -15,22 +14,23 @@ type alignment struct {
 
 type ConcurrentSmithWaterman struct {
 	p, t string
-	h [][]int
-	wg sync.WaitGroup
+	h    [][]int
+	wg   *sync.WaitGroup
 }
 
-func NewCSW(p string, t string) ConcurrentSmithWaterman {
-	h := make([][]int, len(p))
+func NewCSW(p string, t string) *ConcurrentSmithWaterman {
+	h := make([][]int, len(p)+1)
 	for i := range h {
-		h[i] = make([]int, len(t))
+		h[i] = make([]int, len(t)+1)
 	}
-	var wg sync.WaitGroup
-	return ConcurrentSmithWaterman{
-		p: p,
-		t: t,
-		h: h,
+	wg := &sync.WaitGroup{}
+	csw := &ConcurrentSmithWaterman{
+		p:  p,
+		t:  t,
+		h:  h,
 		wg: wg,
 	}
+	return csw
 }
 
 func (csw ConcurrentSmithWaterman) Get(i int, j int) int {
@@ -38,14 +38,13 @@ func (csw ConcurrentSmithWaterman) Get(i int, j int) int {
 }
 
 func (csw ConcurrentSmithWaterman) ConcurrentPopulate(i int, j int) {
-	fmt.Println(csw.wg)
+	defer csw.wg.Done()
+	fmt.Println(csw.h)
 	if i == 0 || j == 0 {
 		csw.h[i][j] = 0
 	} else {
-		csw.h[i][j] = 1 + max(0, csw.h[i-1][j], csw.h[i][j-1], cost(csw.p[i], csw.t[j]))
+		csw.h[i][j] = 1 + max(0, csw.h[i-1][j], csw.h[i][j-1], cost(csw.p[i], csw.t[j])-1)
 	}
-
-	fmt.Println(i, j)
 
 	if i+1 < len(csw.p) {
 		csw.wg.Add(1)
@@ -56,16 +55,14 @@ func (csw ConcurrentSmithWaterman) ConcurrentPopulate(i int, j int) {
 		go csw.ConcurrentPopulate(i, j+1)
 	}
 
-	defer csw.wg.Done()
 }
 
 func (csw ConcurrentSmithWaterman) Populate() {
 	csw.wg.Add(1)
-	go csw.ConcurrentPopulate(0, 0)
+	go csw.ConcurrentPopulate(1, 1)
 
 	csw.wg.Wait()
 }
-
 
 // Calculate the "cost" (for insertion into alignment matrices) of two strings
 // @j6k4m8
@@ -73,9 +70,11 @@ func cost(c0, c1 byte) int {
 	// Using the scores described by Smith et al (1981). This is effectively
 	// changed to { 0, 2 } in the SW implementation because we max against 0.
 	if c0 == c1 {
-		return 2
+		return 1
+		// return 2
 	} else {
-		return -1
+		return 0
+		// return -1
 	}
 }
 
@@ -150,7 +149,7 @@ func min(i, j, k int) int {
 }
 
 func main() {
-	csw := NewCSW("AA", "AA")
+	csw := NewCSW("AAA", "AAA")
 	csw.Populate()
 	fmt.Println(csw.Get(3, 3))
 }
